@@ -32,6 +32,14 @@
         "env": []
     },
     {
+        "id": "7a9a689b1b991e15",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
         "id": "c9cff8dccd3e7c63",
         "type": "subflow",
         "name": "Subflow 1",
@@ -143,6 +151,130 @@
         "type": "graphql-server",
         "name": "http://135.181.35.156:4000/api/explore",
         "endpoint": "http://135.181.35.156:4000/api/explore"
+    },
+    {
+        "id": "1bf8ea68f62a96fd",
+        "type": "ui_group",
+        "name": "reflow",
+        "tab": "cf663179164c69d1",
+        "order": 1,
+        "disp": false,
+        "width": "10",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "cf663179164c69d1",
+        "type": "ui_tab",
+        "name": "one",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "a1f23e7f9e7ee37e",
+        "type": "ui_base",
+        "theme": {
+            "name": "theme-light",
+            "lightTheme": {
+                "default": "#0094CE",
+                "baseColor": "#0094CE",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
+                "edited": true,
+                "reset": false
+            },
+            "darkTheme": {
+                "default": "#097479",
+                "baseColor": "#097479",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
+                "edited": false
+            },
+            "customTheme": {
+                "name": "Untitled Theme 1",
+                "default": "#4B7930",
+                "baseColor": "#4B7930",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
+            },
+            "themeState": {
+                "base-color": {
+                    "default": "#0094CE",
+                    "value": "#0094CE",
+                    "edited": false
+                },
+                "page-titlebar-backgroundColor": {
+                    "value": "#0094CE",
+                    "edited": false
+                },
+                "page-backgroundColor": {
+                    "value": "#fafafa",
+                    "edited": false
+                },
+                "page-sidebar-backgroundColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "group-textColor": {
+                    "value": "#1bbfff",
+                    "edited": false
+                },
+                "group-borderColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "group-backgroundColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "widget-textColor": {
+                    "value": "#111111",
+                    "edited": false
+                },
+                "widget-backgroundColor": {
+                    "value": "#0094ce",
+                    "edited": false
+                },
+                "widget-borderColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "base-font": {
+                    "value": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
+                }
+            },
+            "angularTheme": {
+                "primary": "indigo",
+                "accents": "blue",
+                "warn": "red",
+                "background": "grey",
+                "palette": "light"
+            }
+        },
+        "site": {
+            "name": "Node-RED Dashboard",
+            "hideToolbar": "false",
+            "allowSwipe": "false",
+            "lockMenu": "false",
+            "allowTempTheme": "true",
+            "dateFormat": "DD/MM/YYYY",
+            "sizes": {
+                "sx": 48,
+                "sy": 48,
+                "gx": 6,
+                "gy": 6,
+                "cx": 6,
+                "cy": 6,
+                "px": 0,
+                "py": 0
+            }
+        }
+    },
+    {
+        "id": "a9c7afec098fb039",
+        "type": "ui_tab",
+        "name": "two",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
     },
     {
         "id": "8ba8672253c19bee",
@@ -453,7 +585,7 @@
         "graphql": "e0d0143ee4f650a7",
         "format": "text",
         "syntax": "mustache",
-        "template": "query agents {\n  agents(limit: 20) {\n    canonicalUrl\n    displayUsername\n    id\n    image\n    agentType\n    name\n    note\n\n  }\n \n",
+        "template": "query agents {\n  agents(limit: 20) {\n    canonicalUrl\n    displayUsername\n    id\n    image\n    agentType\n    name\n    note\n\n  }\n}\n \n",
         "showDebug": false,
         "x": 590,
         "y": 780,
@@ -1486,17 +1618,63 @@
         ]
     },
     {
-        "id": "eb7d59e9516fef12",
-        "type": "inject",
-        "z": "d4fc267b074140f6",
+        "id": "f211726934f12e18",
+        "type": "ui_button",
+        "z": "7a9a689b1b991e15",
         "name": "",
+        "group": "1bf8ea68f62a96fd",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "query Economic Resources",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 140,
+        "y": 380,
+        "wires": [
+            [
+                "db36c514d532545a"
+            ]
+        ]
+    },
+    {
+        "id": "db36c514d532545a",
+        "type": "graphql",
+        "z": "7a9a689b1b991e15",
+        "name": "query economicResources",
+        "graphql": "e0d0143ee4f650a7",
+        "format": "text",
+        "syntax": "plain",
+        "template": "query economicResources {\n  economicResources {\n    id\n    image\n    name\n    note\n    onhandQuantity {\n      hasNumericalValue\n    }\n    accountingQuantity {\n      hasNumericalValue\n      hasUnit {\n        canonicalUrl\n        id\n        label\n        symbol\n      }\n      id\n    }\n  }\n}",
+        "showDebug": false,
+        "x": 420,
+        "y": 380,
+        "wires": [
+            [
+                "775506a6b1c7e552",
+                "7cac6463fcc1333a"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "b6295a9427dc1afb",
+        "type": "inject",
+        "z": "7a9a689b1b991e15",
+        "name": "resourceSpecifications",
         "props": [
             {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
+                "p": "authorization",
+                "v": "bearer",
+                "vt": "global"
             }
         ],
         "repeat": "",
@@ -1504,30 +1682,234 @@
         "once": false,
         "onceDelay": 0.1,
         "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 230,
-        "y": 200,
+        "x": 140,
+        "y": 440,
         "wires": [
-            [
-                "0feab80d4e212d65"
-            ]
+            []
         ]
     },
     {
-        "id": "0feab80d4e212d65",
+        "id": "b25038c12ad7a001",
         "type": "debug",
-        "z": "d4fc267b074140f6",
+        "z": "7a9a689b1b991e15",
         "name": "",
         "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
-        "complete": "false",
+        "complete": "payload",
+        "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 460,
-        "y": 200,
+        "x": 890,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "223307711643217c",
+        "type": "graphql",
+        "z": "7a9a689b1b991e15",
+        "name": "economicResource",
+        "graphql": "e0d0143ee4f650a7",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "query MyQuery {\n  economicResource(id: \"{{payload}}\") {\n    name\n    note\n    onhandQuantity {\n      hasNumericalValue\n    }\n  }\n}\n",
+        "showDebug": false,
+        "x": 470,
+        "y": 560,
+        "wires": [
+            [
+                "4ce122dbbd1de7b5",
+                "72fe0c9438dc610f"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "16cb3bbfc07b6872",
+        "type": "inject",
+        "z": "7a9a689b1b991e15",
+        "name": "01FNRPYRXK8MEVMR0SQQSD0QPC",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "authorization",
+                "v": "bearer",
+                "vt": "global"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "01FNRPYRXK8MEVMR0SQQSD0QPC",
+        "payloadType": "str",
+        "x": 190,
+        "y": 620,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "7838d4fad724fe1c",
+        "type": "ui_template",
+        "z": "7a9a689b1b991e15",
+        "group": "1bf8ea68f62a96fd",
+        "name": "",
+        "order": 3,
+        "width": "10",
+        "height": "10",
+        "format": "<div ng-bind-html=\"msg.payload\"></div>",
+        "storeOutMessages": false,
+        "fwdInMessages": false,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "",
+        "x": 880,
+        "y": 400,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "775506a6b1c7e552",
+        "type": "template",
+        "z": "7a9a689b1b991e15",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "{{#payload.economicResources}}\n      {{id}} {{name}} {{note}} {{onhandQuantity.hasNumericalValue}}\n{{/payload.economicResources}}",
+        "output": "str",
+        "x": 660,
+        "y": 400,
+        "wires": [
+            [
+                "b25038c12ad7a001",
+                "7838d4fad724fe1c"
+            ]
+        ]
+    },
+    {
+        "id": "7cac6463fcc1333a",
+        "type": "debug",
+        "z": "7a9a689b1b991e15",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 670,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "169c08603ceead08",
+        "type": "debug",
+        "z": "7a9a689b1b991e15",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 910,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "db48253c98890113",
+        "type": "ui_text_input",
+        "z": "7a9a689b1b991e15",
+        "name": "",
+        "label": "",
+        "tooltip": "query a resource",
+        "group": "1bf8ea68f62a96fd",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "text",
+        "delay": 300,
+        "topic": "payload",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "msg",
+        "x": 180,
+        "y": 560,
+        "wires": [
+            [
+                "223307711643217c"
+            ]
+        ]
+    },
+    {
+        "id": "4ce122dbbd1de7b5",
+        "type": "template",
+        "z": "7a9a689b1b991e15",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "{{#payload.economicResource}}\n      {{name}} {{note}} {{onhandQuantity.hasNumericalValue}}\n{{/payload.economicResource}}",
+        "output": "str",
+        "x": 680,
+        "y": 580,
+        "wires": [
+            [
+                "8f366b427006fe17",
+                "169c08603ceead08"
+            ]
+        ]
+    },
+    {
+        "id": "8f366b427006fe17",
+        "type": "ui_template",
+        "z": "7a9a689b1b991e15",
+        "group": "1bf8ea68f62a96fd",
+        "name": "",
+        "order": 3,
+        "width": "10",
+        "height": "10",
+        "format": "<div ng-bind-html=\"msg.payload\"></div>",
+        "storeOutMessages": false,
+        "fwdInMessages": false,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "",
+        "x": 900,
+        "y": 580,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "72fe0c9438dc610f",
+        "type": "debug",
+        "z": "7a9a689b1b991e15",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 690,
+        "y": 520,
         "wires": []
     }
 ]
