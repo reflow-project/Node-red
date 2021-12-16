@@ -1934,7 +1934,7 @@
         "type": "debug",
         "z": "a9cf961a3a52160c",
         "name": "",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -1942,8 +1942,8 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 950,
-        "y": 360,
+        "x": 810,
+        "y": 100,
         "wires": []
     },
     {
@@ -1951,15 +1951,14 @@
         "type": "http in",
         "z": "a9cf961a3a52160c",
         "name": "Form",
-        "url": "/reflow",
+        "url": "/amsterdam",
         "method": "post",
         "upload": false,
         "swaggerDoc": "",
-        "x": 170,
+        "x": 90,
         "y": 200,
         "wires": [
             [
-                "cdaea726cf96a901",
                 "01f2e8dd1ac14440"
             ]
         ]
@@ -1972,7 +1971,7 @@
         "statusCode": "",
         "headers": {},
         "x": 1210,
-        "y": 200,
+        "y": 360,
         "wires": []
     },
     {
@@ -1980,7 +1979,7 @@
         "type": "debug",
         "z": "a9cf961a3a52160c",
         "name": "",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -1988,22 +1987,22 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 390,
-        "y": 120,
+        "x": 490,
+        "y": 440,
         "wires": []
     },
     {
         "id": "d4b609db9190632b",
         "type": "function",
         "z": "a9cf961a3a52160c",
-        "name": "",
-        "func": "// The headears are already been set\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.data.login.token;\n\n// msg.url = msg.payload.endpoint;\n// msg.method = 'POST';\n\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query: \"query{\\n      myAgent{\\n        id\\n      }\\n    }\",\n  variables: {}\n})\n\n\nreturn msg;\n\n",
+        "name": "Prepare Me",
+        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + flow.get('token');\n\n// These are already set\n// msg.url = msg.payload.endpoint;\n// msg.method = 'POST';\n\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query: \"query{\\n      myAgent{\\n        id\\n      }\\n    }\",\n  variables: {}\n})\n\n\nreturn msg;\n\n",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 840,
+        "x": 890,
         "y": 200,
         "wires": [
             [
@@ -2023,7 +2022,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 400,
+        "x": 300,
         "y": 200,
         "wires": [
             [
@@ -2045,12 +2044,12 @@
         "proxy": "",
         "authType": "",
         "senderr": false,
-        "x": 630,
+        "x": 510,
         "y": 200,
         "wires": [
             [
                 "b582df30a9d2445c",
-                "d4b609db9190632b"
+                "eb54ce9b84dca07d"
             ]
         ]
     },
@@ -2096,12 +2095,207 @@
         "proxy": "",
         "authType": "",
         "senderr": false,
-        "x": 1010,
+        "x": 1090,
         "y": 200,
         "wires": [
             [
+                "b582df30a9d2445c",
+                "50d4a4208199e1f9"
+            ]
+        ]
+    },
+    {
+        "id": "eb54ce9b84dca07d",
+        "type": "change",
+        "z": "a9cf961a3a52160c",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "token",
+                "pt": "flow",
+                "to": "payload.data.login.token",
+                "tot": "msg",
+                "dc": true
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 720,
+        "y": 200,
+        "wires": [
+            [
+                "d4b609db9190632b"
+            ]
+        ]
+    },
+    {
+        "id": "50d4a4208199e1f9",
+        "type": "change",
+        "z": "a9cf961a3a52160c",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "me",
+                "pt": "flow",
+                "to": "payload.data.myAgent.id",
+                "tot": "msg",
+                "dc": true
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 110,
+        "y": 280,
+        "wires": [
+            [
+                "6b9a303ec68aaf47"
+            ]
+        ]
+    },
+    {
+        "id": "6b9a303ec68aaf47",
+        "type": "function",
+        "z": "a9cf961a3a52160c",
+        "name": "Create unit",
+        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + flow.get('token');\n\n// These are already set\n// msg.url = msg.payload.endpoint;\n// msg.method = 'POST';\n\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query: \"mutation($unit:UnitCreateParams!) {\\n\t  createUnit(unit: $unit) {\\n\t\tunit {\\n\t\t  id\\n\t\t}\\n\t  }\\n\t}\",\n  variables: {\"unit\":{\"label\":\"u_piece\",\"symbol\":\"om2:one\"}}\n})\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 290,
+        "y": 280,
+        "wires": [
+            [
+                "41a31f091965c362"
+            ]
+        ]
+    },
+    {
+        "id": "41a31f091965c362",
+        "type": "http request",
+        "z": "a9cf961a3a52160c",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 510,
+        "y": 280,
+        "wires": [
+            [
+                "8aafa40d09d8bbe7"
+            ]
+        ]
+    },
+    {
+        "id": "8aafa40d09d8bbe7",
+        "type": "change",
+        "z": "a9cf961a3a52160c",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "unit",
+                "pt": "flow",
+                "to": "payload.data.createUnit.unit.id",
+                "tot": "msg",
+                "dc": true
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 750,
+        "y": 280,
+        "wires": [
+            [
+                "cae81b35069f60a9"
+            ]
+        ]
+    },
+    {
+        "id": "cae81b35069f60a9",
+        "type": "function",
+        "z": "a9cf961a3a52160c",
+        "name": "Create location",
+        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + flow.get('token');\n\n// These are already set\n// msg.url = msg.payload.endpoint;\n// msg.method = 'POST';\n\nconst name = \"OLVG\";\nconst lat = 52.35871773455108;\nconst long = 4.916762398221842;\nconst addr = \"Oosterpark 9, 1091 AC Amsterdam\";\nconst note = \"olvg.nl\";\n\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\nquery: \"mutation($location: SpatialThingCreateParams!) {\\n\t\t\tcreateSpatialThing(spatialThing: $location) {\\n    \t\t\tspatialThing {\\n      \t\t\t\tid\\n    \t\t\t}\\n            }\\n}\",\n  variables: {\"location\":{\"name\": name,\"alt\":0,\"lat\":lat,\"long\":long,\"mappableAddress\":addr,\"note\":note}}\n})\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 940,
+        "y": 280,
+        "wires": [
+            [
+                "cd0d405b431a7cdc"
+            ]
+        ]
+    },
+    {
+        "id": "cd0d405b431a7cdc",
+        "type": "http request",
+        "z": "a9cf961a3a52160c",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 1130,
+        "y": 280,
+        "wires": [
+            [
+                "877da97dca923fdf"
+            ]
+        ]
+    },
+    {
+        "id": "877da97dca923fdf",
+        "type": "change",
+        "z": "a9cf961a3a52160c",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "location",
+                "pt": "flow",
+                "to": "payload.data.createSpatialThing.spatialThing.id",
+                "tot": "msg",
+                "dc": true
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 120,
+        "y": 360,
+        "wires": [
+            [
                 "befe724ced876012",
-                "b582df30a9d2445c"
+                "cdaea726cf96a901"
             ]
         ]
     }
