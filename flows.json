@@ -1922,16 +1922,11 @@
         "syntax": "mustache",
         "template": "mutation doLogin($username: String!, $password: String!){\n  login(emailOrUsername: $username, password: $password) {\n            token # Use the token to activate a session with the server\n        }\n}\n",
         "showDebug": true,
-        "x": 590,
-        "y": 200,
+        "x": 410,
+        "y": 40,
         "wires": [
-            [
-                "b582df30a9d2445c",
-                "befe724ced876012"
-            ],
-            [
-                "b582df30a9d2445c"
-            ]
+            [],
+            []
         ]
     },
     {
@@ -1947,8 +1942,8 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 690,
-        "y": 400,
+        "x": 950,
+        "y": 360,
         "wires": []
     },
     {
@@ -1965,7 +1960,7 @@
         "wires": [
             [
                 "cdaea726cf96a901",
-                "2e55cca7357b8770"
+                "01f2e8dd1ac14440"
             ]
         ]
     },
@@ -1976,7 +1971,7 @@
         "name": "",
         "statusCode": "",
         "headers": {},
-        "x": 970,
+        "x": 1210,
         "y": 200,
         "wires": []
     },
@@ -1985,7 +1980,7 @@
         "type": "debug",
         "z": "a9cf961a3a52160c",
         "name": "",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -1993,15 +1988,77 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 340,
-        "y": 100,
+        "x": 390,
+        "y": 120,
         "wires": []
     },
     {
-        "id": "2e55cca7357b8770",
+        "id": "d4b609db9190632b",
+        "type": "function",
+        "z": "a9cf961a3a52160c",
+        "name": "",
+        "func": "// The headears are already been set\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.data.login.token;\n\n// msg.url = msg.payload.endpoint;\n// msg.method = 'POST';\n\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query: \"query{\\n      myAgent{\\n        id\\n      }\\n    }\",\n  variables: {}\n})\n\n\nreturn msg;\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 200,
+        "wires": [
+            [
+                "232a28ed71fceec6",
+                "b582df30a9d2445c"
+            ]
+        ]
+    },
+    {
+        "id": "01f2e8dd1ac14440",
+        "type": "function",
+        "z": "a9cf961a3a52160c",
+        "name": "Prepare Login",
+        "func": "\n\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query: \"mutation doLogin($username: String!, $password: String!){\\n  login(emailOrUsername: $username, password: $password) {\\n            token # Use the token to activate a session with the server\\n        }\\n}\\n\",\n  variables: {\"username\": msg.payload.username,\"password\": msg.payload.password}\n})\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 200,
+        "wires": [
+            [
+                "ced9f63df845af74"
+            ]
+        ]
+    },
+    {
+        "id": "ced9f63df845af74",
+        "type": "http request",
+        "z": "a9cf961a3a52160c",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 630,
+        "y": 200,
+        "wires": [
+            [
+                "b582df30a9d2445c",
+                "d4b609db9190632b"
+            ]
+        ]
+    },
+    {
+        "id": "4c5bb97de669a96e",
         "type": "change",
         "z": "a9cf961a3a52160c",
-        "name": "SetVars",
+        "name": "",
         "rules": [
             {
                 "t": "set",
@@ -2017,8 +2074,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 370,
-        "y": 200,
+        "x": 230,
+        "y": 40,
         "wires": [
             [
                 "8e81d85ce7c3edf9"
@@ -2026,20 +2083,26 @@
         ]
     },
     {
-        "id": "d4b609db9190632b",
-        "type": "function",
+        "id": "232a28ed71fceec6",
+        "type": "http request",
         "z": "a9cf961a3a52160c",
         "name": "",
-        "func": "\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 780,
-        "y": 140,
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 1010,
+        "y": 200,
         "wires": [
-            []
+            [
+                "befe724ced876012",
+                "b582df30a9d2445c"
+            ]
         ]
     }
 ]
