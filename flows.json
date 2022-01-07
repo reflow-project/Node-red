@@ -34,7 +34,7 @@
     {
         "id": "a9cf961a3a52160c",
         "type": "tab",
-        "label": "Amsterdam",
+        "label": "Isolation Gowns",
         "disabled": false,
         "info": "",
         "env": []
@@ -1913,28 +1913,11 @@
         "wires": []
     },
     {
-        "id": "8e81d85ce7c3edf9",
-        "type": "graphql",
-        "z": "a9cf961a3a52160c",
-        "name": "Login",
-        "graphql": "e0d0143ee4f650a7",
-        "format": "handlebars",
-        "syntax": "mustache",
-        "template": "mutation doLogin($username: String!, $password: String!){\n  login(emailOrUsername: $username, password: $password) {\n            token # Use the token to activate a session with the server\n        }\n}\n",
-        "showDebug": true,
-        "x": 410,
-        "y": 40,
-        "wires": [
-            [],
-            []
-        ]
-    },
-    {
         "id": "b582df30a9d2445c",
         "type": "debug",
         "z": "a9cf961a3a52160c",
         "name": "",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -1942,8 +1925,8 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 810,
-        "y": 100,
+        "x": 570,
+        "y": 500,
         "wires": []
     },
     {
@@ -1951,11 +1934,11 @@
         "type": "http in",
         "z": "a9cf961a3a52160c",
         "name": "Form",
-        "url": "/amsterdam",
+        "url": "/isolationgowns/login",
         "method": "post",
         "upload": false,
         "swaggerDoc": "",
-        "x": 90,
+        "x": 50,
         "y": 200,
         "wires": [
             [
@@ -1970,44 +1953,26 @@
         "name": "",
         "statusCode": "",
         "headers": {},
-        "x": 1210,
-        "y": 360,
-        "wires": []
-    },
-    {
-        "id": "cdaea726cf96a901",
-        "type": "debug",
-        "z": "a9cf961a3a52160c",
-        "name": "",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 490,
-        "y": 440,
+        "x": 750,
+        "y": 700,
         "wires": []
     },
     {
         "id": "d4b609db9190632b",
         "type": "function",
         "z": "a9cf961a3a52160c",
-        "name": "Prepare Me",
-        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + flow.get('token');\n\n// These are already set\n// msg.url = msg.payload.endpoint;\n// msg.method = 'POST';\n\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query: \"query{\\n      myAgent{\\n        id\\n      }\\n    }\",\n  variables: {}\n})\n\n\nreturn msg;\n\n",
+        "name": "Retrieve id",
+        "func": "// Read the payload\nmsg.credentials = {};\nmsg.credentials.token = msg.payload.data.login.token;\n\n\n// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.credentials.token;\n\n// These are already set and payload is not valid anymore\n// msg.url = msg.payload.endpoint;\n// msg.method = 'POST';\n\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query: `query{\n            myAgent{\n                id\n            }\n          }`,\n  variables: {}\n})\n\n\nreturn msg;\n\n",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 890,
+        "x": 570,
         "y": 200,
         "wires": [
             [
-                "232a28ed71fceec6",
-                "b582df30a9d2445c"
+                "232a28ed71fceec6"
             ]
         ]
     },
@@ -2015,14 +1980,14 @@
         "id": "01f2e8dd1ac14440",
         "type": "function",
         "z": "a9cf961a3a52160c",
-        "name": "Prepare Login",
-        "func": "\n\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query: \"mutation doLogin($username: String!, $password: String!){\\n  login(emailOrUsername: $username, password: $password) {\\n            token # Use the token to activate a session with the server\\n        }\\n}\\n\",\n  variables: {\"username\": msg.payload.username,\"password\": msg.payload.password}\n})\n\nreturn msg;",
+        "name": "Login Agent",
+        "func": "\n\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query: `mutation doLogin($username: String!, $password: String!) {\n            login(emailOrUsername: $username, password: $password) {\n                token\n            }\n          }`,\n  variables: {\"username\": msg.payload.username,\n              \"password\": msg.payload.password}\n})\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 300,
+        "x": 210,
         "y": 200,
         "wires": [
             [
@@ -2044,40 +2009,11 @@
         "proxy": "",
         "authType": "",
         "senderr": false,
-        "x": 510,
+        "x": 370,
         "y": 200,
         "wires": [
             [
-                "b582df30a9d2445c",
-                "eb54ce9b84dca07d"
-            ]
-        ]
-    },
-    {
-        "id": "4c5bb97de669a96e",
-        "type": "change",
-        "z": "a9cf961a3a52160c",
-        "name": "",
-        "rules": [
-            {
-                "t": "set",
-                "p": "variables",
-                "pt": "msg",
-                "to": "payload",
-                "tot": "msg",
-                "dc": true
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 230,
-        "y": 40,
-        "wires": [
-            [
-                "8e81d85ce7c3edf9"
+                "d4b609db9190632b"
             ]
         ]
     },
@@ -2095,68 +2031,11 @@
         "proxy": "",
         "authType": "",
         "senderr": false,
-        "x": 1090,
+        "x": 770,
         "y": 200,
         "wires": [
             [
-                "b582df30a9d2445c",
-                "50d4a4208199e1f9"
-            ]
-        ]
-    },
-    {
-        "id": "eb54ce9b84dca07d",
-        "type": "change",
-        "z": "a9cf961a3a52160c",
-        "name": "",
-        "rules": [
-            {
-                "t": "set",
-                "p": "token",
-                "pt": "flow",
-                "to": "payload.data.login.token",
-                "tot": "msg",
-                "dc": true
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 720,
-        "y": 200,
-        "wires": [
-            [
-                "d4b609db9190632b"
-            ]
-        ]
-    },
-    {
-        "id": "50d4a4208199e1f9",
-        "type": "change",
-        "z": "a9cf961a3a52160c",
-        "name": "",
-        "rules": [
-            {
-                "t": "set",
-                "p": "me",
-                "pt": "flow",
-                "to": "payload.data.myAgent.id",
-                "tot": "msg",
-                "dc": true
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 110,
-        "y": 280,
-        "wires": [
-            [
-                "6b9a303ec68aaf47"
+                "bbeba4dd2bc281e6"
             ]
         ]
     },
@@ -2164,15 +2043,15 @@
         "id": "6b9a303ec68aaf47",
         "type": "function",
         "z": "a9cf961a3a52160c",
-        "name": "Create unit",
-        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + flow.get('token');\n\n// These are already set\n// msg.url = msg.payload.endpoint;\n// msg.method = 'POST';\n\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query: \"mutation($unit:UnitCreateParams!) {\\n\t  createUnit(unit: $unit) {\\n\t\tunit {\\n\t\t  id\\n\t\t}\\n\t  }\\n\t}\",\n  variables: {\"unit\":{\"label\":\"u_piece\",\"symbol\":\"om2:one\"}}\n})\n\n\nreturn msg;",
+        "name": "Create Unit",
+        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.token;\n\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\nconst label = msg.payload.label;\nconst symbol = msg.payload.symbol;\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query: `mutation($unit:UnitCreateParams!) {\n            createUnit(unit: $unit) {\n                unit {\n                    id\n                }\n            }\n          }`,\n  variables: {\"unit\": {\n                        \"label\": label,\n                        \"symbol\": symbol\n                        }\n            }\n})\n\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 290,
-        "y": 280,
+        "x": 210,
+        "y": 360,
         "wires": [
             [
                 "41a31f091965c362"
@@ -2193,8 +2072,8 @@
         "proxy": "",
         "authType": "",
         "senderr": false,
-        "x": 510,
-        "y": 280,
+        "x": 410,
+        "y": 360,
         "wires": [
             [
                 "8aafa40d09d8bbe7"
@@ -2205,7 +2084,7 @@
         "id": "8aafa40d09d8bbe7",
         "type": "change",
         "z": "a9cf961a3a52160c",
-        "name": "",
+        "name": "Set Unit",
         "rules": [
             {
                 "t": "set",
@@ -2221,11 +2100,11 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 750,
-        "y": 280,
+        "x": 580,
+        "y": 360,
         "wires": [
             [
-                "cae81b35069f60a9"
+                "7e3394bb6ca1da06"
             ]
         ]
     },
@@ -2233,14 +2112,14 @@
         "id": "cae81b35069f60a9",
         "type": "function",
         "z": "a9cf961a3a52160c",
-        "name": "Create location",
-        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + flow.get('token');\n\n// These are already set\n// msg.url = msg.payload.endpoint;\n// msg.method = 'POST';\n\nconst name = \"OLVG\";\nconst lat = 52.35871773455108;\nconst long = 4.916762398221842;\nconst addr = \"Oosterpark 9, 1091 AC Amsterdam\";\nconst note = \"olvg.nl\";\n\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\nquery: \"mutation($location: SpatialThingCreateParams!) {\\n\t\t\tcreateSpatialThing(spatialThing: $location) {\\n    \t\t\tspatialThing {\\n      \t\t\t\tid\\n    \t\t\t}\\n            }\\n}\",\n  variables: {\"location\":{\"name\": name,\"alt\":0,\"lat\":lat,\"long\":long,\"mappableAddress\":addr,\"note\":note}}\n})\n\n\nreturn msg;",
+        "name": "Create Location",
+        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.token;\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\nconst name = msg.payload.name;\nconst lat = msg.payload.lat;\nconst long = msg.payload.long;\nconst addr = msg.payload.addr;\nconst note = msg.payload.note;\n\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n    query: `mutation($location: SpatialThingCreateParams!) {\n            createSpatialThing(spatialThing: $location) {\n                spatialThing {\n                    id\n                }\n            }\n        }`,\n    variables: {\n        \"location\": {\n            \"name\": name,\n            \"alt\": 0,\n            \"lat\": lat,\n            \"long\": long,\n            \"mappableAddress\": addr,\n            \"note\": note\n        }\n    }\n})\n\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 940,
+        "x": 220,
         "y": 280,
         "wires": [
             [
@@ -2262,41 +2141,289 @@
         "proxy": "",
         "authType": "",
         "senderr": false,
-        "x": 1130,
+        "x": 410,
         "y": 280,
         "wires": [
             [
-                "877da97dca923fdf"
+                "122698bde7168a3b"
             ]
         ]
     },
     {
-        "id": "877da97dca923fdf",
-        "type": "change",
+        "id": "e7f96084acdd0aa2",
+        "type": "function",
+        "z": "a9cf961a3a52160c",
+        "name": "Create Process",
+        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + flow.get('token');\n\n// These are already set\n// msg.url = msg.payload.endpoint;\n// msg.method = 'POST';\n\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query: `mutation($process:ProcessCreateParams!) {\n\t  createProcess(process: $process) {\n\t\tprocess {\n\t\t  id\n\t\t}\n\t  }\n\t}\n`,\n  variables: {\n      \"process\": {\n        \"name\": name,\n        \"note\": note,\n        \"hasBeginning\": ts,\n        \"hasEnd\": ts\n      }\n  }\n})\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 700,
+        "wires": [
+            [
+                "6aa9a2b8655a0820"
+            ]
+        ]
+    },
+    {
+        "id": "6aa9a2b8655a0820",
+        "type": "http request",
         "z": "a9cf961a3a52160c",
         "name": "",
-        "rules": [
-            {
-                "t": "set",
-                "p": "location",
-                "pt": "flow",
-                "to": "payload.data.createSpatialThing.spatialThing.id",
-                "tot": "msg",
-                "dc": true
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 120,
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": false,
+        "url": "",
+        "persist": false,
+        "authType": "",
+        "senderr": false,
+        "x": 570,
+        "y": 700,
+        "wires": [
+            [
+                "befe724ced876012"
+            ]
+        ]
+    },
+    {
+        "id": "6196df0943914213",
+        "type": "http response",
+        "z": "a9cf961a3a52160c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1150,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "bbeba4dd2bc281e6",
+        "type": "function",
+        "z": "a9cf961a3a52160c",
+        "name": "Format Reply",
+        "func": "// Read the payload\nmsg.credentials.id = msg.payload.data.myAgent.id;\n\n// Provide an answer\nmsg.payload = {};\nmsg.payload.token = msg.credentials.token;\nmsg.payload.id = msg.credentials.id;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 980,
+        "y": 200,
+        "wires": [
+            [
+                "6196df0943914213"
+            ]
+        ]
+    },
+    {
+        "id": "62143c0efd3e2261",
+        "type": "http in",
+        "z": "a9cf961a3a52160c",
+        "name": "Form",
+        "url": "/isolationgowns/location",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 50,
+        "y": 280,
+        "wires": [
+            [
+                "cae81b35069f60a9"
+            ]
+        ]
+    },
+    {
+        "id": "85edf2b45871f9bd",
+        "type": "http response",
+        "z": "a9cf961a3a52160c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 830,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "122698bde7168a3b",
+        "type": "function",
+        "z": "a9cf961a3a52160c",
+        "name": "Format Reply",
+        "func": "// Read the payload\nconst location = msg.payload.data.createSpatialThing.spatialThing.id;\n\nmsg.payload = {};\nmsg.payload.location = location;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 640,
+        "y": 280,
+        "wires": [
+            [
+                "85edf2b45871f9bd"
+            ]
+        ]
+    },
+    {
+        "id": "cf3e88999b724618",
+        "type": "comment",
+        "z": "a9cf961a3a52160c",
+        "name": "Perform Login",
+        "info": "",
+        "x": 70,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "9927f0b45d15344b",
+        "type": "http in",
+        "z": "a9cf961a3a52160c",
+        "name": "Form",
+        "url": "/isolationgowns/unit",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 50,
         "y": 360,
         "wires": [
             [
-                "befe724ced876012",
-                "cdaea726cf96a901"
+                "6b9a303ec68aaf47"
             ]
+        ]
+    },
+    {
+        "id": "7e3394bb6ca1da06",
+        "type": "function",
+        "z": "a9cf961a3a52160c",
+        "name": "Format Reply",
+        "func": "// Read the payload\nconst unit = msg.payload.data.createUnit.unit.id;\n\nmsg.payload = {};\nmsg.payload.unit = unit;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 780,
+        "y": 360,
+        "wires": [
+            [
+                "71f92c67ca67af48"
+            ]
+        ]
+    },
+    {
+        "id": "71f92c67ca67af48",
+        "type": "http response",
+        "z": "a9cf961a3a52160c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 930,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "72c05c5c0bd10d12",
+        "type": "http response",
+        "z": "a9cf961a3a52160c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 890,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "04c370bd35360547",
+        "type": "function",
+        "z": "a9cf961a3a52160c",
+        "name": "Format Reply",
+        "func": "const eventId = msg.payload.data.createEconomicEvent.economicEvent.id;\nconst resourceIn = msg.payload.data.createEconomicEvent.economicEvent.resourceInventoriedAs;\nconst resourceOut = msg.payload.data.createEconomicEvent.economicEvent.toResourceInventoriedAs;\n\n\nmsg.payload = {};\nmsg.payload.eventId = eventId;\nmsg.payload.resourceIn = resourceIn;\nmsg.payload.resourceOut = resourceOut;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 660,
+        "y": 440,
+        "wires": [
+            [
+                "72c05c5c0bd10d12"
+            ]
+        ]
+    },
+    {
+        "id": "75ad1ae27b0775fb",
+        "type": "http request",
+        "z": "a9cf961a3a52160c",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 410,
+        "y": 440,
+        "wires": [
+            [
+                "b582df30a9d2445c",
+                "04c370bd35360547"
+            ]
+        ]
+    },
+    {
+        "id": "62fcaf5db019d842",
+        "type": "function",
+        "z": "a9cf961a3a52160c",
+        "name": "Create Resource",
+        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.token;\n\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\nconst agent_id = msg.payload.agent_id;\nconst resource_id = msg.payload.resource_id;\nconst unit_id = msg.payload.unit_id;\nconst amount = msg.payload.amount;\nconst resource_name = msg.payload.resource_name;\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query:    `mutation($event:EconomicEventCreateParams!, $newInventoriedResource:EconomicResourceCreateParams) {\n                createEconomicEvent(event:$event, newInventoriedResource:$newInventoriedResource) {\n                    economicEvent {\n                        id\n                        provider {\n                            id\n                            name\n                            note\n                        }\n                        resourceQuantity {\n                            hasNumericalValue\n                            hasUnit {\n                                label\n                                symbol\n                            }\n                        }\n                        toResourceInventoriedAs { \n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                        }\n                    }\n                }\n            }`,\n    variables: {\n        \"event\": {\n            \"note\": \"update event\",\n            \"action\": \"raise\",\n            \"provider\": agent_id, \n            \"receiver\": agent_id, \n            \"resourceInventoriedAs\": resource_id,\n            \"resourceQuantity\": {\n              \"hasUnit\": unit_id, \n              \"hasNumericalValue\": amount \n            }\n        },\n        \"newInventoriedResource\": { \n            \"name\": resource_name\n        }\n    }\n})\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 230,
+        "y": 440,
+        "wires": [
+            [
+                "75ad1ae27b0775fb"
+            ]
+        ]
+    },
+    {
+        "id": "13197e6bea34f939",
+        "type": "http in",
+        "z": "a9cf961a3a52160c",
+        "name": "Form",
+        "url": "/isolationgowns/resource",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 50,
+        "y": 440,
+        "wires": [
+            [
+                "62fcaf5db019d842"
+            ]
+        ]
+    },
+    {
+        "id": "6f6ff941e3d532c6",
+        "type": "http in",
+        "z": "a9cf961a3a52160c",
+        "name": "Form",
+        "url": "/isolationgowns/resource",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 110,
+        "y": 700,
+        "wires": [
+            []
         ]
     }
 ]
