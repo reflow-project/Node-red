@@ -2153,8 +2153,7 @@
         "y": 580,
         "wires": [
             [
-                "cf36936a5c75bfd6",
-                "6905f51ee38526b3"
+                "cf36936a5c75bfd6"
             ]
         ]
     },
@@ -2360,8 +2359,7 @@
         "y": 440,
         "wires": [
             [
-                "75ad1ae27b0775fb",
-                "b582df30a9d2445c"
+                "75ad1ae27b0775fb"
             ]
         ]
     },
@@ -2561,8 +2559,8 @@
         "id": "e6a4ec239be873e1",
         "type": "function",
         "z": "a9cf961a3a52160c",
-        "name": "Transfer custody",
-        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.token;\n\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\nconst provider_id = msg.payload.provider_id;\nconst receiver_id = msg.payload.receiver_id;\nconst resource_id = msg.payload.resource_id;\nconst unit_id = msg.payload.unit_id;\nconst amount = msg.payload.amount;\nconst location_id = msg.payload.location_id;\n\nconst ts = new Date(Date.now());\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query:    `mutation($event:EconomicEventCreateParams!) {\n                createEconomicEvent(event:$event) {\n                    economicEvent {\n                        id\n                        provider {\n                            id\n                            name\n                            note\n                        }\n                        resourceQuantity {\n                            hasNumericalValue\n                            hasUnit {\n                                label\n                                symbol\n                            }\n                        }\n                        toResourceInventoriedAs { \n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                        }\n                        resourceInventoriedAs {\n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                        }\n                    }\n                }\n            }`,\n    variables: {\n        \"event\": {\n            \"note\": \"transfer event\",\n            \"action\": \"transfer-custody\",\n            \"provider\": provider_id, \n            \"receiver\": receiver_id, \n            \"toResourceInventoriedAs\": resource_id,\n            \"hasPointInTime\": ts,\n            \"atLocation\": location_id,\n            \"resourceQuantity\": {\n              \"hasUnit\": unit_id, \n              \"hasNumericalValue\": amount \n            }\n        }\n    }\n})\n\n\nreturn msg;",
+        "name": "Transfer Custody",
+        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.token;\n\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\nconst note = msg.payload.note;\nconst provider_id = msg.payload.provider_id;\nconst receiver_id = msg.payload.receiver_id;\nconst resource_id = msg.payload.resource_id;\nconst unit_id = msg.payload.unit_id;\nconst amount = msg.payload.amount;\nconst location_id = msg.payload.location_id;\nconst name = msg.payload.name;\n\nconst ts = new Date(Date.now());\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query:    `mutation($event:EconomicEventCreateParams!) {\n                createEconomicEvent(event:$event) {\n                    economicEvent {\n                        id\n                        provider {\n                            id\n                            name\n                            note\n                        }\n                        resourceQuantity {\n                            hasNumericalValue\n                            hasUnit {\n                                label\n                                symbol\n                            }\n                        }\n                        toResourceInventoriedAs { \n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            primaryAccountable {\n                            id\n                          }\n                        }\n                        resourceInventoriedAs {\n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            primaryAccountable {\n                            id\n                          }\n                        }\n                    }\n                }\n            }`,\n    variables: {\n        \"event\": {\n            \"note\": note,\n            \"action\": \"transfer-custody\",\n            \"provider\": provider_id, \n            \"receiver\": receiver_id, \n            \"toResourceInventoriedAs\": resource_id,\n            \"hasPointInTime\": ts,\n            \"atLocation\": location_id,\n            \"resourceQuantity\": {\n              \"hasUnit\": unit_id, \n              \"hasNumericalValue\": amount \n            }\n        },\n        \"newInventoriedResource\": { \n            \"name\": name\n        }\n    }\n})\n\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -2572,8 +2570,7 @@
         "y": 720,
         "wires": [
             [
-                "1f51d816c9254a8e",
-                "78bbd41a6c118d6b"
+                "1f51d816c9254a8e"
             ]
         ]
     },
@@ -2593,7 +2590,7 @@
         "type": "function",
         "z": "a9cf961a3a52160c",
         "name": "Format Reply",
-        "func": "const processId = msg.payload.data.createProcess.process.id;\n\n\nmsg.payload = {};\nmsg.payload.processId = processId;\n\nreturn msg;",
+        "func": "const eventId = msg.payload.data.createEconomicEvent.economicEvent.id;\n\n\nmsg.payload = {};\nmsg.payload.eventId = eventId;\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -2634,14 +2631,14 @@
         "id": "1239e8ccc0e65584",
         "type": "function",
         "z": "a9cf961a3a52160c",
-        "name": "Clean Resource",
-        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.token;\n\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\nconst agent_id = msg.payload.agent_id;\nconst resource_id = msg.payload.resource_id;\nconst unit_id = msg.payload.unit_id;\nconst amount = msg.payload.amount;\nconst resource_name = msg.payload.resource_name;\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query:    `mutation($event:EconomicEventCreateParams!, $newInventoriedResource:EconomicResourceCreateParams) {\n                createEconomicEvent(event:$event, newInventoriedResource:$newInventoriedResource) {\n                    economicEvent {\n                        id\n                        provider {\n                            id\n                            name\n                            note\n                        }\n                        resourceQuantity {\n                            hasNumericalValue\n                            hasUnit {\n                                label\n                                symbol\n                            }\n                        }\n                        toResourceInventoriedAs { \n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                        }\n                        resourceInventoriedAs {\n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                        }\n                    }\n                }\n            }`,\n    variables: {\n        \"event\": {\n            \"note\": \"update event\",\n            \"action\": \"raise\",\n            \"provider\": agent_id, \n            \"receiver\": agent_id, \n            \"resourceInventoriedAs\": resource_id,\n            \"resourceQuantity\": {\n              \"hasUnit\": unit_id, \n              \"hasNumericalValue\": amount \n            }\n        },\n        \"newInventoriedResource\": { \n            \"name\": resource_name\n        }\n    }\n})\n\n\nreturn msg;",
+        "name": "Create Event",
+        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.token;\n\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\nvar variables = {\n        \"event\": {\n            \"note\": msg.payload.note,\n            \"action\": msg.payload.action\n        }\n};\n\nif ( msg.payload.provider_id != undefined ){\n    variables.event.provider = msg.payload.provider_id;\n}\n\nif ( msg.payload.receiver_id != undefined ){\n    variables.event.receiver = msg.payload.receiver_id;\n}\n\nif ( msg.payload.processIn_id != undefined ){\n    variables.event.inputOf = msg.payload.processIn_id;\n}\n\nif ( msg.payload.processOut_id != undefined ){\n    variables.event.outputOf = msg.payload.processOut_id;\n}\n\nif ( msg.payload.unit_id != undefined && msg.payload.amount != undefined){\n    variables.event.resourceQuantity = {};\n    variables.event.resourceQuantity.hasUnit = msg.payload.unit_id;\n    variables.event.resourceQuantity.hasNumericalValue = msg.payload.amount;\n}\n\nif ( msg.payload.resource_id != undefined ){\n    variables.event.resourceInventoriedAs = msg.payload.resource_id;\n}\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query:    `mutation($event:EconomicEventCreateParams!) {\n                createEconomicEvent(event:$event) {\n                    economicEvent {\n                        id\n                        provider {\n                            id\n                            name\n                            note\n                        }\n                        resourceQuantity {\n                            hasNumericalValue\n                            hasUnit {\n                                label\n                                symbol\n                            }\n                        }\n                        toResourceInventoriedAs { \n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            primaryAccountable {\n                            id\n                          }\n                        }\n                        resourceInventoriedAs {\n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            primaryAccountable {\n                            id\n                          }\n                        }\n                    }\n                }\n            }`,\n    variables: variables\n})\n\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 200,
+        "x": 190,
         "y": 840,
         "wires": [
             [
@@ -2671,7 +2668,7 @@
         "type": "http in",
         "z": "a9cf961a3a52160c",
         "name": "Form",
-        "url": "/isolationgowns/clean",
+        "url": "/isolationgowns/event",
         "method": "post",
         "upload": false,
         "swaggerDoc": "",
@@ -2679,113 +2676,8 @@
         "y": 840,
         "wires": [
             [
-                "1239e8ccc0e65584"
-            ]
-        ]
-    },
-    {
-        "id": "1128a37c5af49f7e",
-        "type": "http response",
-        "z": "a9cf961a3a52160c",
-        "name": "",
-        "statusCode": "",
-        "headers": {},
-        "x": 890,
-        "y": 980,
-        "wires": []
-    },
-    {
-        "id": "05919648badae41b",
-        "type": "function",
-        "z": "a9cf961a3a52160c",
-        "name": "Format Reply",
-        "func": "const processId = msg.payload.data.createProcess.process.id;\n\n\nmsg.payload = {};\nmsg.payload.processId = processId;\n\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 660,
-        "y": 980,
-        "wires": [
-            [
-                "1128a37c5af49f7e"
-            ]
-        ]
-    },
-    {
-        "id": "a1cc02fb401d3a08",
-        "type": "http request",
-        "z": "a9cf961a3a52160c",
-        "name": "",
-        "method": "use",
-        "ret": "obj",
-        "paytoqs": "ignore",
-        "url": "",
-        "tls": "",
-        "persist": false,
-        "proxy": "",
-        "authType": "",
-        "senderr": false,
-        "x": 410,
-        "y": 980,
-        "wires": [
-            [
-                "9e20153989848d85",
-                "05919648badae41b"
-            ]
-        ]
-    },
-    {
-        "id": "b4e966b0e39fd54a",
-        "type": "function",
-        "z": "a9cf961a3a52160c",
-        "name": "Dry Resource",
-        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.token;\n\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\nconst agent_id = msg.payload.agent_id;\nconst resource_id = msg.payload.resource_id;\nconst unit_id = msg.payload.unit_id;\nconst amount = msg.payload.amount;\nconst resource_name = msg.payload.resource_name;\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query:    `mutation($event:EconomicEventCreateParams!, $newInventoriedResource:EconomicResourceCreateParams) {\n                createEconomicEvent(event:$event, newInventoriedResource:$newInventoriedResource) {\n                    economicEvent {\n                        id\n                        provider {\n                            id\n                            name\n                            note\n                        }\n                        resourceQuantity {\n                            hasNumericalValue\n                            hasUnit {\n                                label\n                                symbol\n                            }\n                        }\n                        toResourceInventoriedAs { \n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                        }\n                        resourceInventoriedAs {\n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                        }\n                    }\n                }\n            }`,\n    variables: {\n        \"event\": {\n            \"note\": \"update event\",\n            \"action\": \"raise\",\n            \"provider\": agent_id, \n            \"receiver\": agent_id, \n            \"resourceInventoriedAs\": resource_id,\n            \"resourceQuantity\": {\n              \"hasUnit\": unit_id, \n              \"hasNumericalValue\": amount \n            }\n        },\n        \"newInventoriedResource\": { \n            \"name\": resource_name\n        }\n    }\n})\n\n\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 200,
-        "y": 980,
-        "wires": [
-            [
-                "a1cc02fb401d3a08"
-            ]
-        ]
-    },
-    {
-        "id": "9e20153989848d85",
-        "type": "debug",
-        "z": "a9cf961a3a52160c",
-        "name": "",
-        "active": false,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 570,
-        "y": 1040,
-        "wires": []
-    },
-    {
-        "id": "b6dee3f670153eb7",
-        "type": "http in",
-        "z": "a9cf961a3a52160c",
-        "name": "Form",
-        "url": "/isolationgowns/dry",
-        "method": "post",
-        "upload": false,
-        "swaggerDoc": "",
-        "x": 50,
-        "y": 980,
-        "wires": [
-            [
-                "b4e966b0e39fd54a"
+                "1239e8ccc0e65584",
+                "2fdd738ccee21e9c"
             ]
         ]
     }

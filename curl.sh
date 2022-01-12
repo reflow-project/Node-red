@@ -22,64 +22,82 @@ locB_long='5.412460440524406'
 locB_addr='De schakel 30, 5651 Eindhoven'
 locB_note='Textile service provider'
 
-unitlabel='u_piece'
-unitsymbol='om2:one'
-
-resource_name="Gown"
-resource_id="http://cleanlease.nl/zs/${RANDOM}"
-
-process_name="testProcess"
-process_note="$(date)"
 
 
 function doLogin {
-    # echo "{\"username\" : \"${usernameA}\", \"password\" : \"${passwordA}\", \"endpoint\" : \"${my_endpoint}\" }"
-    result=$(curl -X POST -H "Content-Type: application/json" \
-        -d "{\"username\" : \"${1}\", \"password\" : \"${2}\", \"endpoint\" : \"${my_endpoint}\" }" \
-        ${my_nodered}/login 2>/dev/null)
+    body="{\"username\" : \"${1}\", \"password\" : \"${2}\", \"endpoint\" : \"${my_endpoint}\" }"
+    # echo "${body}"
+    result=$(curl -X POST -H "Content-Type: application/json" -d "${body}" ${my_nodered}/login 2>/dev/null)
     echo ${result}
 }
 
 function createLocation {
-    # echo "{\"token\" : ${1}, \"name\" : \"${2}\", \"lat\" : ${3}, \"long\" : ${4}, \"addr\" : \"${5}\", \"note\" : \"${6}\", \"endpoint\" : \"${my_endpoint}\" }" \
-    result=$(curl -X POST -H "Content-Type: application/json" \
-        -d "{\"token\" : ${1}, \"name\" : \"${2}\", \"lat\" : ${3}, \"long\" : ${4}, \"addr\" : \"${5}\", \"note\" : \"${6}\", \"endpoint\" : \"${my_endpoint}\" }" \
-        ${my_nodered}/location 2>/dev/null)
+    body="{\"token\" : ${1}, \"name\" : \"${2}\", \"lat\" : ${3}, \"long\" : ${4}, \"addr\" : \"${5}\", \"note\" : \"${6}\", \"endpoint\" : \"${my_endpoint}\" }"
+    # echo "${body}"
+    result=$(curl -X POST -H "Content-Type: application/json" -d "${body}" ${my_nodered}/location 2>/dev/null)
     echo ${result}
 }
 
 function createUnit {
-    # echo "{\"token\" : ${1}, \"label\" : \"${2}\", \"symbol\" : \"${3}\", \"endpoint\" : \"${my_endpoint}\" }"
-    result=$(curl -X POST -H "Content-Type: application/json" \
-        -d "{\"token\" : ${1}, \"label\" : \"${2}\", \"symbol\" : \"${3}\", \"endpoint\" : \"${my_endpoint}\" }" \
-        ${my_nodered}/unit 2>/dev/null)
+    body="{\"token\" : ${1}, \"label\" : \"${2}\", \"symbol\" : \"${3}\", \"endpoint\" : \"${my_endpoint}\" }"
+    # echo "${body}"
+    result=$(curl -X POST -H "Content-Type: application/json" -d "${body}" ${my_nodered}/unit 2>/dev/null)
     echo ${result}
 }
 
 function createResource {
-    # echo "{\"token\" : ${1}, \"agent_id\" : ${2}, \"resource_id\" : \"${3}\", \"unit_id\" : ${4}, \"amount\" : ${5}, \"endpoint\" : \"${my_endpoint}\" }"
-    result=$(curl -X POST -H "Content-Type: application/json" \
-        -d "{\"token\" : ${1}, \"agent_id\" : ${2}, \"resource_name\" : \"${3}\", \"resource_id\" : \"${4}\", \"unit_id\" : ${5}, \"amount\" : ${6}, \"endpoint\" : \"${my_endpoint}\" }" \
-        ${my_nodered}/resource 2>/dev/null)
+    body="{\"token\" : ${1}, \"agent_id\" : ${2}, \"resource_name\" : \"${3}\", \"resource_id\" : \"${4}\", \"unit_id\" : ${5}, \"amount\" : ${6}, \"endpoint\" : \"${my_endpoint}\" }"
+    # echo "${body}"
+    result=$(curl -X POST -H "Content-Type: application/json" -d "${body}" ${my_nodered}/resource 2>/dev/null)
     echo ${result}
 }
 
 function createProcess {
-    # echo "{\"token\" : ${1}, \"process_name\" : \"${2}\", \"process_note\" : \"${3}\", \"endpoint\" : \"${my_endpoint}\" }"
-    result=$(curl -X POST -H "Content-Type: application/json" \
-        -d "{\"token\" : ${1}, \"process_name\" : \"${2}\", \"process_note\" : \"${3}\", \"endpoint\" : \"${my_endpoint}\" }" \
-        ${my_nodered}/process 2>/dev/null)
+    body="{\"token\" : ${1}, \"process_name\" : \"${2}\", \"process_note\" : \"${3}\", \"endpoint\" : \"${my_endpoint}\" }"
+    # echo "${body}"
+    result=$(curl -X POST -H "Content-Type: application/json" -d "${body}" ${my_nodered}/process 2>/dev/null)
     echo ${result}
 }
 
 function transferCustody {
 
-    # echo "{\"token\" : ${1}, \"provider_id\" : ${2}, \"receiver_id\" : ${3}, \"resource_id\" : \"${4}\", \"unit_id\" : ${5}, \"amount\" : ${6}, \"location_id\" : ${7}, \"endpoint\" : \"${my_endpoint}\" }"
-    result=$(curl -X POST -H "Content-Type: application/json" \
-        -d "{\"token\" : ${1}, \"provider_id\" : ${2}, \"receiver_id\" : ${3}, \"resource_id\" : \"${4}\", \"unit_id\" : ${5}, \"amount\" : ${6}, \"location_id\" : ${7}, \"endpoint\" : \"${my_endpoint}\" }" \
-        ${my_nodered}/transfer 2>/dev/null)
+    body="{\"token\" : ${1}, \"provider_id\" : ${2}, \"receiver_id\" : ${3}, \"name\" : \"${4}\", \"resource_id\" : ${5}, \"unit_id\" : ${6}, \"amount\" : ${7}, \"location_id\" : ${8}, \"note\": \"${9}\", \"endpoint\" : \"${my_endpoint}\" }"
+    # echo "${body}"
+    result=$(curl -X POST -H "Content-Type: application/json" -d "${body}" ${my_nodered}/transfer 2>/dev/null)
     echo ${result}
 }
+
+function createEvent {
+    
+    action=${1}
+    common_body="\"action\" : \"${action}\", \"token\" : ${2},  \"note\": \"${3}\", \"provider_id\" : ${4}, \"receiver_id\" : ${5}, \"unit_id\" : ${6}, \"amount\" : ${7}, \"endpoint\" : \"${my_endpoint}\""
+    # echo ${common_body}
+
+    case "${action}" in
+        "work")
+            body="{ ${common_body}, \"processIn_id\" : ${8}}"
+        ;;
+        "accept")
+            body="{ ${common_body}, \"processIn_id\" : ${8}, \"resource_id\" : ${9}}"
+        ;;
+        "modify")
+            body="{ ${common_body}, \"processOut_id\" : ${8}, \"resource_id\" : ${9}}"
+        ;;
+        "consume")
+            body="{ ${common_body}, \"processIn_id\" : ${8}, \"resource_id\" : \"${9}\"}"
+        ;;
+        *)
+            echo "Please specify a valid action"
+        ;;
+	esac
+
+    # echo ${body}
+    result=$(curl -X POST -H "Content-Type: application/json" \
+        -d "${body}" \
+        ${my_nodered}/event 2>/dev/null)
+    echo ${result}
+}
+
 
 result=$(doLogin ${usernameA} ${passwordA})
 # echo "result is: ${result}"
@@ -106,28 +124,118 @@ then
     locationB=$(echo ${result} | jq '.location')
     # echo "locationB is ${locationB}" 
 
-    result=$(createUnit ${tokenA} ${unitlabel} "${unitsymbol}")
+    result=$(createUnit ${tokenB} "u_piece" "om2:one")
     # echo "result is: ${result}"
-    unit=$(echo ${result} | jq '.unit')
+    piece_unit=$(echo ${result} | jq '.unit')
     # echo "Unit is ${unit}" 
 
-    # createResource ${tokenA} "${idA}" ${resource_id} "${unit}" 1
-    result=$(createResource ${tokenA} "${idA}" "${resource_name}" ${resource_id} "${unit}" 1)
+    result=$(createUnit ${tokenB} "kg" "om2:kilogram")
     # echo "result is: ${result}"
-    eventId=$(echo ${result} | jq '.eventId')
-    resourceIn_id=$(echo ${result} | jq '.resourceIn.id')
-    resourceOut_id=$(echo ${result} | jq '.resourceOut.id')
-    #echo "resource_id is: ${resource_id}, eventId is ${eventId}, resourceIn_id is ${resourceIn_id}, resourceOut_id is ${resourceOut_id}" 
+    mass_unit=$(echo ${result} | jq '.unit')
+    # echo "Unit is ${unit}"
 
-    # createProcess ${tokenA} "${process_name}" "${process_note}"
-    result=$(createProcess ${tokenA} "${process_name}" "${process_note}")
+    result=$(createUnit ${tokenB} "lt" "om2:litre")
     # echo "result is: ${result}"
-    process_id=$(echo ${result} | jq '.processId')
-    # echo "process_id is: ${process_id}" 
-
+    volume_unit=$(echo ${result} | jq '.unit')
+    # echo "Unit is ${unit}"
+    
+    result=$(createUnit ${tokenA} "h" "om2:hour")
+    # echo "result is: ${result}"
+    time_unit=$(echo ${result} | jq '.unit')
+    # echo "Unit is ${unit}"
+    
 fi
 
-result=$(transferCustody ${tokenA} ${idA} ${idB} ${resource_id} ${unit} 1 ${locationA})
+gown_trackid="gown-${RANDOM}"
+result=$(createResource ${tokenB} "${idB}" "Gown" ${gown_trackid} "${piece_unit}" 1)
+# echo "result is: ${result}"
+creategown_id=$(echo ${result} | jq '.eventId')
+resourceIn_id=$(echo ${result} | jq '.resourceIn.id')
+gown_id=$(echo ${result} | jq '.resourceOut.id')
+# echo "creategown_id is: ${creategown_id}, gown_trackid is: ${gown_trackid}, gown_id is ${gown_id}" 
+
+soap_trackid="soap-${RANDOM}"
+result=$(createResource ${tokenB} "${idB}" "Soap" ${soap_trackid} "${mass_unit}" 100)
+# echo "result is: ${result}"
+createsoap_id=$(echo ${result} | jq '.eventId')
+resourceIn_id=$(echo ${result} | jq '.resourceIn.id')
+soap_id=$(echo ${result} | jq '.resourceOut.id')
+# echo "createsoap_id is: ${createsoap_id}, soap_trackid is: ${soap_trackid}, soap_id is ${soap_id}" 
+
+water_trackid="water-${RANDOM}"
+result=$(createResource ${tokenB} "${idB}" "Water" ${water_trackid} "${volume_unit}" 50)
+# echo "result is: ${result}"
+event_id=$(echo ${result} | jq '.eventId')
+resourceIn_id=$(echo ${result} | jq '.resourceIn.id')
+water_id=$(echo ${result} | jq '.resourceOut.id')
+# echo "createwater_id is: ${event_id}, water_trackid is: ${water_trackid}, water_id is ${water_id}" 
+
+
+################################################################################
+##### First we transfer the gown from the owner to the hospital
+##### The cleaner is still the primary accountable
+################################################################################
+result=$(transferCustody ${tokenB} ${idB} ${idA} "Gown" ${gown_id} ${piece_unit} 1 ${locationA} "transfer to hospital")
 # echo "result is: ${result}"
 transfer_id=$(echo ${result} | jq '.transferID')
-echo "transfer_id is: ${transfer_id}" 
+# echo "transfer_id is: ${transfer_id}" 
+
+################################################################################
+##### Perform the process at the hospital
+################################################################################
+result=$(createProcess ${tokenA} "Use Gowns" "Use process performed at ${locA_name}")
+# echo "result is: ${result}"
+useprocess_id=$(echo ${result} | jq '.processId')
+# echo "useprocess_id is: ${useprocess_id}"
+
+result=$(createEvent "work" ${tokenA} "perform surgery" ${idA} ${idA} ${time_unit} 80 ${useprocess_id})
+# echo "result is: ${result}"
+event_id=$(echo ${result} | jq '.eventId')
+# echo "clean_id is: ${clean_id}" 
+
+result=$(createEvent "accept" ${tokenA} "use for surgery" ${idB} ${idA} ${piece_unit} 1 ${useprocess_id} ${gown_id})
+# echo "result is: ${result}"
+event_id=$(echo ${result} | jq '.eventId')
+# echo "clean_id is: ${clean_id}" 
+
+result=$(createEvent "modify" ${tokenA} "dirty after use" ${idB} ${idA} ${piece_unit} 1 ${useprocess_id} ${gown_id})
+# echo "result is: ${result}"
+event_id=$(echo ${result} | jq '.eventId')
+# echo "clean_id is: ${clean_id}" 
+
+################################################################################
+##### Transfer back to the owner (the cleaner)
+################################################################################
+
+result=$(transferCustody ${tokenA} ${idA} ${idB} "Gown" ${gown_id} ${piece_unit} 1 ${locationB} "transfer to cleaner")
+# echo "result is: ${result}"
+transfer_id=$(echo ${result} | jq '.transferID')
+# echo "transfer_id is: ${transfer_id}" 
+
+################################################################################
+##### Perform the process at the cleaner
+################################################################################
+result=$(createProcess ${tokenB} "Clean Gowns" "Cleaning process performed at ${locB_name}")
+# echo "result is: ${result}"
+cleanprocess_id=$(echo ${result} | jq '.processId')
+# echo "cleanprocess_id is: ${cleanprocess_id}" 
+
+result=$(createEvent "accept" ${tokenB} "to be cleaned" ${idB} ${idB} ${piece_unit} 1 ${cleanprocess_id} ${gown_id})
+# echo "result is: ${result}"
+event_id=$(echo ${result} | jq '.eventId')
+# echo "clean_id is: ${clean_id}" 
+
+result=$(createEvent "consume" ${tokenB} "water for the washing" ${idB} ${idB} ${volume_unit} 25 ${cleanprocess_id} ${water_trackid})
+# echo "result is: ${result}"
+event_id=$(echo ${result} | jq '.eventId')
+# echo "clean_id is: ${clean_id}" 
+
+result=$(createEvent "consume" ${tokenB} "soap for the washing" ${idB} ${idB} ${mass_unit} 50 ${cleanprocess_id} ${soap_trackid})
+# echo "result is: ${result}"
+event_id=$(echo ${result} | jq '.eventId')
+# echo "clean_id is: ${clean_id}" 
+
+result=$(createEvent "modify" ${tokenB} "clean after washing" ${idB} ${idB} ${piece_unit} 1 ${cleanprocess_id} ${gown_id})
+# echo "result is: ${result}"
+event_id=$(echo ${result} | jq '.eventId')
+# echo "clean_id is: ${clean_id}" 
