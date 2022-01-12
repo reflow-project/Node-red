@@ -1,6 +1,8 @@
+# In case we will read one day some data from disk, we do not need to do the init, currently not supported
 do_init=${1}
 
 my_nodered='localhost:1880/isolationgowns'
+# my_nodered='http://zorro.free2air.net:1880/isolationgowns'
 my_endpoint='http://135.181.35.156:4000/api/explore'
 
 hospital_username='stefano+olvg@waag.org'
@@ -115,8 +117,8 @@ cleaner_token=$(echo ${result} | jq '.token')
 cleaner_id=$(echo ${result} | jq '.id')
 # echo "cleaner_token is ${cleaner_token}, cleaner_id is ${cleaner_id}" 
 
-if [ ! "${do_init} " == " " ]
-then
+# if [ ! "${do_init} " == " " ]
+# then
     ################################################################################
     ##### Create locations and units of measures (currently always done)
     ################################################################################
@@ -151,7 +153,7 @@ then
     time_unit=$(echo ${result} | jq '.unit')
     # echo "Unit is ${unit}"
     
-fi
+# fi
 
 ################################################################################
 ##### Create Resources (the owner is the cleaner for them all):
