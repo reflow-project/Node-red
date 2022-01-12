@@ -1,3 +1,5 @@
+do_init=${1}
+
 my_nodered='localhost:1880/isolationgowns'
 my_endpoint='http://135.181.35.156:4000/api/explore'
 
@@ -26,9 +28,11 @@ unitsymbol='om2:one'
 resource_name="Gown"
 resource_id="http://cleanlease.nl/zs/${RANDOM}"
 
+process_name="testProcess"
+process_note="$(date)"
+
+
 function doLogin {
-    username=${1}
-    password=${2}
     # echo "{\"username\" : \"${usernameA}\", \"password\" : \"${passwordA}\", \"endpoint\" : \"${my_endpoint}\" }"
     result=$(curl -X POST -H "Content-Type: application/json" \
         -d "{\"username\" : \"${1}\", \"password\" : \"${2}\", \"endpoint\" : \"${my_endpoint}\" }" \
@@ -37,13 +41,6 @@ function doLogin {
 }
 
 function createLocation {
-    token=${1}
-    name=${2}
-    lat=${3}
-    long=${4}
-    addr=${5}
-    note=${6}
-
     # echo "{\"token\" : ${1}, \"name\" : \"${2}\", \"lat\" : ${3}, \"long\" : ${4}, \"addr\" : \"${5}\", \"note\" : \"${6}\", \"endpoint\" : \"${my_endpoint}\" }" \
     result=$(curl -X POST -H "Content-Type: application/json" \
         -d "{\"token\" : ${1}, \"name\" : \"${2}\", \"lat\" : ${3}, \"long\" : ${4}, \"addr\" : \"${5}\", \"note\" : \"${6}\", \"endpoint\" : \"${my_endpoint}\" }" \
@@ -52,10 +49,6 @@ function createLocation {
 }
 
 function createUnit {
-    token=${1}
-    label=${2}
-    symbol=${3}
-
     # echo "{\"token\" : ${1}, \"label\" : \"${2}\", \"symbol\" : \"${3}\", \"endpoint\" : \"${my_endpoint}\" }"
     result=$(curl -X POST -H "Content-Type: application/json" \
         -d "{\"token\" : ${1}, \"label\" : \"${2}\", \"symbol\" : \"${3}\", \"endpoint\" : \"${my_endpoint}\" }" \
@@ -64,17 +57,27 @@ function createUnit {
 }
 
 function createResource {
-    token=${1}
-    agent_id=${2}
-    resource_name=${3}
-    resource_id=${4}
-    unit_id=${5}
-    amount=${6}
-
     # echo "{\"token\" : ${1}, \"agent_id\" : ${2}, \"resource_id\" : \"${3}\", \"unit_id\" : ${4}, \"amount\" : ${5}, \"endpoint\" : \"${my_endpoint}\" }"
     result=$(curl -X POST -H "Content-Type: application/json" \
         -d "{\"token\" : ${1}, \"agent_id\" : ${2}, \"resource_name\" : \"${3}\", \"resource_id\" : \"${4}\", \"unit_id\" : ${5}, \"amount\" : ${6}, \"endpoint\" : \"${my_endpoint}\" }" \
         ${my_nodered}/resource 2>/dev/null)
+    echo ${result}
+}
+
+function createProcess {
+    # echo "{\"token\" : ${1}, \"process_name\" : \"${2}\", \"process_note\" : \"${3}\", \"endpoint\" : \"${my_endpoint}\" }"
+    result=$(curl -X POST -H "Content-Type: application/json" \
+        -d "{\"token\" : ${1}, \"process_name\" : \"${2}\", \"process_note\" : \"${3}\", \"endpoint\" : \"${my_endpoint}\" }" \
+        ${my_nodered}/process 2>/dev/null)
+    echo ${result}
+}
+
+function transferCustody {
+
+    # echo "{\"token\" : ${1}, \"provider_id\" : ${2}, \"receiver_id\" : ${3}, \"resource_id\" : \"${4}\", \"unit_id\" : ${5}, \"amount\" : ${6}, \"location_id\" : ${7}, \"endpoint\" : \"${my_endpoint}\" }"
+    result=$(curl -X POST -H "Content-Type: application/json" \
+        -d "{\"token\" : ${1}, \"provider_id\" : ${2}, \"receiver_id\" : ${3}, \"resource_id\" : \"${4}\", \"unit_id\" : ${5}, \"amount\" : ${6}, \"location_id\" : ${7}, \"endpoint\" : \"${my_endpoint}\" }" \
+        ${my_nodered}/transfer 2>/dev/null)
     echo ${result}
 }
 
@@ -84,10 +87,6 @@ tokenA=$(echo ${result} | jq '.token')
 idA=$(echo ${result} | jq '.id')
 # echo "tokenA is ${tokenA}, idA is ${idA}" 
 
-result=$(createLocation ${tokenA} "${locA_name}" ${locA_lat} ${locA_long} "${locA_addr}" ${locA_note})
-# echo "result is: ${result}"
-locationA=$(echo ${result} | jq '.location')
-# echo "locationA is ${locationA}" 
 
 result=$(doLogin ${usernameB} ${passwordB})
 # echo "result is: ${result}"
@@ -95,21 +94,40 @@ tokenB=$(echo ${result} | jq '.token')
 idB=$(echo ${result} | jq '.id')
 # echo "tokenB is ${tokenB}, idB is ${idB}" 
 
-result=$(createLocation ${tokenB} "${locB_name}" ${locB_lat} ${locB_long} "${locB_addr}" ${locB_note})
-# echo "result is: ${result}"
-locationB=$(echo ${result} | jq '.location')
-# echo "locationB is ${locationB}" 
+if [ ! "${do_init} " == " " ]
+then
+    result=$(createLocation ${tokenA} "${locA_name}" ${locA_lat} ${locA_long} "${locA_addr}" ${locA_note})
+    # echo "result is: ${result}"
+    locationA=$(echo ${result} | jq '.location')
+    # echo "locationA is ${locationA}" 
 
-result=$(createUnit ${tokenA} ${unitlabel} "${unitsymbol}")
-# echo "result is: ${result}"
-unit=$(echo ${result} | jq '.unit')
-# echo "Unit is ${unit}" 
+    result=$(createLocation ${tokenB} "${locB_name}" ${locB_lat} ${locB_long} "${locB_addr}" ${locB_note})
+    # echo "result is: ${result}"
+    locationB=$(echo ${result} | jq '.location')
+    # echo "locationB is ${locationB}" 
 
-# createResource ${tokenA} "${idA}" ${resource_id} "${unit}" 1
-result=$(createResource ${tokenA} "${idA}" "${resource_name}" ${resource_id} "${unit}" 1)
-# echo "result is: ${result}"
-eventId=$(echo ${result} | jq '.eventId')
-resourceIn_id=$(echo ${result} | jq '.resourceIn.id')
-resourceOut_id=$(echo ${result} | jq '.resourceOut.id')
-echo "resource_id is: ${resource_id}, eventId is ${eventId}, resourceIn_id is ${resourceIn_id}, resourceOut_id is ${resourceOut_id}" 
+    result=$(createUnit ${tokenA} ${unitlabel} "${unitsymbol}")
+    # echo "result is: ${result}"
+    unit=$(echo ${result} | jq '.unit')
+    # echo "Unit is ${unit}" 
 
+    # createResource ${tokenA} "${idA}" ${resource_id} "${unit}" 1
+    result=$(createResource ${tokenA} "${idA}" "${resource_name}" ${resource_id} "${unit}" 1)
+    # echo "result is: ${result}"
+    eventId=$(echo ${result} | jq '.eventId')
+    resourceIn_id=$(echo ${result} | jq '.resourceIn.id')
+    resourceOut_id=$(echo ${result} | jq '.resourceOut.id')
+    #echo "resource_id is: ${resource_id}, eventId is ${eventId}, resourceIn_id is ${resourceIn_id}, resourceOut_id is ${resourceOut_id}" 
+
+    # createProcess ${tokenA} "${process_name}" "${process_note}"
+    result=$(createProcess ${tokenA} "${process_name}" "${process_note}")
+    # echo "result is: ${result}"
+    process_id=$(echo ${result} | jq '.processId')
+    # echo "process_id is: ${process_id}" 
+
+fi
+
+result=$(transferCustody ${tokenA} ${idA} ${idB} ${resource_id} ${unit} 1 ${locationA})
+# echo "result is: ${result}"
+transfer_id=$(echo ${result} | jq '.transferID')
+echo "transfer_id is: ${transfer_id}" 

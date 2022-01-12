@@ -1917,7 +1917,7 @@
         "type": "debug",
         "z": "a9cf961a3a52160c",
         "name": "",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -1945,17 +1945,6 @@
                 "01f2e8dd1ac14440"
             ]
         ]
-    },
-    {
-        "id": "befe724ced876012",
-        "type": "http response",
-        "z": "a9cf961a3a52160c",
-        "name": "",
-        "statusCode": "",
-        "headers": {},
-        "x": 750,
-        "y": 700,
-        "wires": []
     },
     {
         "id": "d4b609db9190632b",
@@ -2154,37 +2143,18 @@
         "type": "function",
         "z": "a9cf961a3a52160c",
         "name": "Create Process",
-        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + flow.get('token');\n\n// These are already set\n// msg.url = msg.payload.endpoint;\n// msg.method = 'POST';\n\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query: `mutation($process:ProcessCreateParams!) {\n\t  createProcess(process: $process) {\n\t\tprocess {\n\t\t  id\n\t\t}\n\t  }\n\t}\n`,\n  variables: {\n      \"process\": {\n        \"name\": name,\n        \"note\": note,\n        \"hasBeginning\": ts,\n        \"hasEnd\": ts\n      }\n  }\n})\n\nreturn msg;",
+        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.token;\n\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\nconst name = msg.payload.process_name;\nconst note = msg.payload.process_note;\n\nconst ts = new Date(Date.now());\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query: `mutation($process:ProcessCreateParams!) {\n\t  createProcess(process: $process) {\n\t\tprocess {\n\t\t  id\n\t\t}\n\t  }\n\t}\n`,\n  variables: {\n      \"process\": {\n        \"name\": name,\n        \"note\": note,\n        \"hasBeginning\": ts,\n        \"hasEnd\": ts\n      }\n  }\n})\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 340,
-        "y": 700,
+        "x": 220,
+        "y": 580,
         "wires": [
             [
-                "6aa9a2b8655a0820"
-            ]
-        ]
-    },
-    {
-        "id": "6aa9a2b8655a0820",
-        "type": "http request",
-        "z": "a9cf961a3a52160c",
-        "name": "",
-        "method": "GET",
-        "ret": "txt",
-        "paytoqs": false,
-        "url": "",
-        "persist": false,
-        "authType": "",
-        "senderr": false,
-        "x": 570,
-        "y": 700,
-        "wires": [
-            [
-                "befe724ced876012"
+                "cf36936a5c75bfd6",
+                "6905f51ee38526b3"
             ]
         ]
     },
@@ -2380,7 +2350,7 @@
         "type": "function",
         "z": "a9cf961a3a52160c",
         "name": "Create Resource",
-        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.token;\n\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\nconst agent_id = msg.payload.agent_id;\nconst resource_id = msg.payload.resource_id;\nconst unit_id = msg.payload.unit_id;\nconst amount = msg.payload.amount;\nconst resource_name = msg.payload.resource_name;\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query:    `mutation($event:EconomicEventCreateParams!, $newInventoriedResource:EconomicResourceCreateParams) {\n                createEconomicEvent(event:$event, newInventoriedResource:$newInventoriedResource) {\n                    economicEvent {\n                        id\n                        provider {\n                            id\n                            name\n                            note\n                        }\n                        resourceQuantity {\n                            hasNumericalValue\n                            hasUnit {\n                                label\n                                symbol\n                            }\n                        }\n                        toResourceInventoriedAs { \n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                        }\n                    }\n                }\n            }`,\n    variables: {\n        \"event\": {\n            \"note\": \"update event\",\n            \"action\": \"raise\",\n            \"provider\": agent_id, \n            \"receiver\": agent_id, \n            \"resourceInventoriedAs\": resource_id,\n            \"resourceQuantity\": {\n              \"hasUnit\": unit_id, \n              \"hasNumericalValue\": amount \n            }\n        },\n        \"newInventoriedResource\": { \n            \"name\": resource_name\n        }\n    }\n})\n\n\nreturn msg;",
+        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.token;\n\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\nconst agent_id = msg.payload.agent_id;\nconst resource_id = msg.payload.resource_id;\nconst unit_id = msg.payload.unit_id;\nconst amount = msg.payload.amount;\nconst resource_name = msg.payload.resource_name;\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query:    `mutation($event:EconomicEventCreateParams!, $newInventoriedResource:EconomicResourceCreateParams) {\n                createEconomicEvent(event:$event, newInventoriedResource:$newInventoriedResource) {\n                    economicEvent {\n                        id\n                        provider {\n                            id\n                            name\n                            note\n                        }\n                        resourceQuantity {\n                            hasNumericalValue\n                            hasUnit {\n                                label\n                                symbol\n                            }\n                        }\n                        toResourceInventoriedAs { \n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                        }\n                        resourceInventoriedAs {\n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                        }\n                    }\n                }\n            }`,\n    variables: {\n        \"event\": {\n            \"note\": \"update event\",\n            \"action\": \"raise\",\n            \"provider\": agent_id, \n            \"receiver\": agent_id, \n            \"resourceInventoriedAs\": resource_id,\n            \"resourceQuantity\": {\n              \"hasUnit\": unit_id, \n              \"hasNumericalValue\": amount \n            }\n        },\n        \"newInventoriedResource\": { \n            \"name\": resource_name\n        }\n    }\n})\n\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -2390,7 +2360,8 @@
         "y": 440,
         "wires": [
             [
-                "75ad1ae27b0775fb"
+                "75ad1ae27b0775fb",
+                "b582df30a9d2445c"
             ]
         ]
     },
@@ -2412,18 +2383,410 @@
         ]
     },
     {
-        "id": "6f6ff941e3d532c6",
+        "id": "ec61e56c21eb3e9f",
+        "type": "function",
+        "z": "a9cf961a3a52160c",
+        "name": "Format Reply",
+        "func": "const processId = msg.payload.data.createProcess.process.id;\n\n\nmsg.payload = {};\nmsg.payload.processId = processId;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 660,
+        "y": 580,
+        "wires": [
+            [
+                "c3e3e6232d39d1b6"
+            ]
+        ]
+    },
+    {
+        "id": "cf36936a5c75bfd6",
+        "type": "http request",
+        "z": "a9cf961a3a52160c",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 410,
+        "y": 580,
+        "wires": [
+            [
+                "6905f51ee38526b3",
+                "ec61e56c21eb3e9f"
+            ]
+        ]
+    },
+    {
+        "id": "c3e3e6232d39d1b6",
+        "type": "http response",
+        "z": "a9cf961a3a52160c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 890,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "6905f51ee38526b3",
+        "type": "debug",
+        "z": "a9cf961a3a52160c",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 570,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "b82c72a08c1a9fde",
         "type": "http in",
         "z": "a9cf961a3a52160c",
         "name": "Form",
-        "url": "/isolationgowns/resource",
+        "url": "/isolationgowns/process",
         "method": "post",
         "upload": false,
         "swaggerDoc": "",
-        "x": 110,
-        "y": 700,
+        "x": 50,
+        "y": 580,
         "wires": [
-            []
+            [
+                "e7f96084acdd0aa2"
+            ]
+        ]
+    },
+    {
+        "id": "71e1a605b5ded04e",
+        "type": "http response",
+        "z": "a9cf961a3a52160c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 890,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "ec313c7bf8cd91cf",
+        "type": "function",
+        "z": "a9cf961a3a52160c",
+        "name": "Format Reply",
+        "func": "const transferID = msg.payload.data.createEconomicEvent.economicEvent.id;\n\n\nmsg.payload = {};\nmsg.payload.transferID = transferID;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 660,
+        "y": 720,
+        "wires": [
+            [
+                "71e1a605b5ded04e"
+            ]
+        ]
+    },
+    {
+        "id": "1f51d816c9254a8e",
+        "type": "http request",
+        "z": "a9cf961a3a52160c",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 410,
+        "y": 720,
+        "wires": [
+            [
+                "78bbd41a6c118d6b",
+                "ec313c7bf8cd91cf"
+            ]
+        ]
+    },
+    {
+        "id": "78bbd41a6c118d6b",
+        "type": "debug",
+        "z": "a9cf961a3a52160c",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 570,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "26c12da433641d7d",
+        "type": "http in",
+        "z": "a9cf961a3a52160c",
+        "name": "Form",
+        "url": "/isolationgowns/transfer",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 50,
+        "y": 720,
+        "wires": [
+            [
+                "e6a4ec239be873e1",
+                "78bbd41a6c118d6b"
+            ]
+        ]
+    },
+    {
+        "id": "e6a4ec239be873e1",
+        "type": "function",
+        "z": "a9cf961a3a52160c",
+        "name": "Transfer custody",
+        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.token;\n\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\nconst provider_id = msg.payload.provider_id;\nconst receiver_id = msg.payload.receiver_id;\nconst resource_id = msg.payload.resource_id;\nconst unit_id = msg.payload.unit_id;\nconst amount = msg.payload.amount;\nconst location_id = msg.payload.location_id;\n\nconst ts = new Date(Date.now());\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query:    `mutation($event:EconomicEventCreateParams!) {\n                createEconomicEvent(event:$event) {\n                    economicEvent {\n                        id\n                        provider {\n                            id\n                            name\n                            note\n                        }\n                        resourceQuantity {\n                            hasNumericalValue\n                            hasUnit {\n                                label\n                                symbol\n                            }\n                        }\n                        toResourceInventoriedAs { \n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                        }\n                        resourceInventoriedAs {\n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                        }\n                    }\n                }\n            }`,\n    variables: {\n        \"event\": {\n            \"note\": \"transfer event\",\n            \"action\": \"transfer-custody\",\n            \"provider\": provider_id, \n            \"receiver\": receiver_id, \n            \"toResourceInventoriedAs\": resource_id,\n            \"hasPointInTime\": ts,\n            \"atLocation\": location_id,\n            \"resourceQuantity\": {\n              \"hasUnit\": unit_id, \n              \"hasNumericalValue\": amount \n            }\n        }\n    }\n})\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 210,
+        "y": 720,
+        "wires": [
+            [
+                "1f51d816c9254a8e",
+                "78bbd41a6c118d6b"
+            ]
+        ]
+    },
+    {
+        "id": "fe5db33a07f08de1",
+        "type": "http response",
+        "z": "a9cf961a3a52160c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 890,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "d1f6e59d5ba1e759",
+        "type": "function",
+        "z": "a9cf961a3a52160c",
+        "name": "Format Reply",
+        "func": "const processId = msg.payload.data.createProcess.process.id;\n\n\nmsg.payload = {};\nmsg.payload.processId = processId;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 660,
+        "y": 840,
+        "wires": [
+            [
+                "fe5db33a07f08de1"
+            ]
+        ]
+    },
+    {
+        "id": "9395b1d5f101d921",
+        "type": "http request",
+        "z": "a9cf961a3a52160c",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 410,
+        "y": 840,
+        "wires": [
+            [
+                "2fdd738ccee21e9c",
+                "d1f6e59d5ba1e759"
+            ]
+        ]
+    },
+    {
+        "id": "1239e8ccc0e65584",
+        "type": "function",
+        "z": "a9cf961a3a52160c",
+        "name": "Clean Resource",
+        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.token;\n\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\nconst agent_id = msg.payload.agent_id;\nconst resource_id = msg.payload.resource_id;\nconst unit_id = msg.payload.unit_id;\nconst amount = msg.payload.amount;\nconst resource_name = msg.payload.resource_name;\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query:    `mutation($event:EconomicEventCreateParams!, $newInventoriedResource:EconomicResourceCreateParams) {\n                createEconomicEvent(event:$event, newInventoriedResource:$newInventoriedResource) {\n                    economicEvent {\n                        id\n                        provider {\n                            id\n                            name\n                            note\n                        }\n                        resourceQuantity {\n                            hasNumericalValue\n                            hasUnit {\n                                label\n                                symbol\n                            }\n                        }\n                        toResourceInventoriedAs { \n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                        }\n                        resourceInventoriedAs {\n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                        }\n                    }\n                }\n            }`,\n    variables: {\n        \"event\": {\n            \"note\": \"update event\",\n            \"action\": \"raise\",\n            \"provider\": agent_id, \n            \"receiver\": agent_id, \n            \"resourceInventoriedAs\": resource_id,\n            \"resourceQuantity\": {\n              \"hasUnit\": unit_id, \n              \"hasNumericalValue\": amount \n            }\n        },\n        \"newInventoriedResource\": { \n            \"name\": resource_name\n        }\n    }\n})\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 200,
+        "y": 840,
+        "wires": [
+            [
+                "9395b1d5f101d921"
+            ]
+        ]
+    },
+    {
+        "id": "2fdd738ccee21e9c",
+        "type": "debug",
+        "z": "a9cf961a3a52160c",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 570,
+        "y": 900,
+        "wires": []
+    },
+    {
+        "id": "1b77e1551252bd55",
+        "type": "http in",
+        "z": "a9cf961a3a52160c",
+        "name": "Form",
+        "url": "/isolationgowns/clean",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 50,
+        "y": 840,
+        "wires": [
+            [
+                "1239e8ccc0e65584"
+            ]
+        ]
+    },
+    {
+        "id": "1128a37c5af49f7e",
+        "type": "http response",
+        "z": "a9cf961a3a52160c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 890,
+        "y": 980,
+        "wires": []
+    },
+    {
+        "id": "05919648badae41b",
+        "type": "function",
+        "z": "a9cf961a3a52160c",
+        "name": "Format Reply",
+        "func": "const processId = msg.payload.data.createProcess.process.id;\n\n\nmsg.payload = {};\nmsg.payload.processId = processId;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 660,
+        "y": 980,
+        "wires": [
+            [
+                "1128a37c5af49f7e"
+            ]
+        ]
+    },
+    {
+        "id": "a1cc02fb401d3a08",
+        "type": "http request",
+        "z": "a9cf961a3a52160c",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 410,
+        "y": 980,
+        "wires": [
+            [
+                "9e20153989848d85",
+                "05919648badae41b"
+            ]
+        ]
+    },
+    {
+        "id": "b4e966b0e39fd54a",
+        "type": "function",
+        "z": "a9cf961a3a52160c",
+        "name": "Dry Resource",
+        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.token;\n\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\nconst agent_id = msg.payload.agent_id;\nconst resource_id = msg.payload.resource_id;\nconst unit_id = msg.payload.unit_id;\nconst amount = msg.payload.amount;\nconst resource_name = msg.payload.resource_name;\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query:    `mutation($event:EconomicEventCreateParams!, $newInventoriedResource:EconomicResourceCreateParams) {\n                createEconomicEvent(event:$event, newInventoriedResource:$newInventoriedResource) {\n                    economicEvent {\n                        id\n                        provider {\n                            id\n                            name\n                            note\n                        }\n                        resourceQuantity {\n                            hasNumericalValue\n                            hasUnit {\n                                label\n                                symbol\n                            }\n                        }\n                        toResourceInventoriedAs { \n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                        }\n                        resourceInventoriedAs {\n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                        }\n                    }\n                }\n            }`,\n    variables: {\n        \"event\": {\n            \"note\": \"update event\",\n            \"action\": \"raise\",\n            \"provider\": agent_id, \n            \"receiver\": agent_id, \n            \"resourceInventoriedAs\": resource_id,\n            \"resourceQuantity\": {\n              \"hasUnit\": unit_id, \n              \"hasNumericalValue\": amount \n            }\n        },\n        \"newInventoriedResource\": { \n            \"name\": resource_name\n        }\n    }\n})\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 200,
+        "y": 980,
+        "wires": [
+            [
+                "a1cc02fb401d3a08"
+            ]
+        ]
+    },
+    {
+        "id": "9e20153989848d85",
+        "type": "debug",
+        "z": "a9cf961a3a52160c",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 570,
+        "y": 1040,
+        "wires": []
+    },
+    {
+        "id": "b6dee3f670153eb7",
+        "type": "http in",
+        "z": "a9cf961a3a52160c",
+        "name": "Form",
+        "url": "/isolationgowns/dry",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 50,
+        "y": 980,
+        "wires": [
+            [
+                "b4e966b0e39fd54a"
+            ]
         ]
     }
 ]
