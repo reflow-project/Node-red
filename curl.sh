@@ -14,7 +14,6 @@ lochospital_long='4.916762398221842'
 lochospital_addr='Oosterpark 9, 1091 AC Amsterdam'
 lochospital_note='olvg.nl'
 
-
 cleaner_username='stefano+cls@waag.org'
 cleaner_password='PasswordCL1'
 
@@ -23,8 +22,6 @@ loccleaner_lat='51.47240440868687'
 loccleaner_long='5.412460440524406'
 loccleaner_addr='De schakel 30, 5651 Eindhoven'
 loccleaner_note='Textile service provider'
-
-
 
 function doLogin {
     body="{\"username\" : \"${1}\", \"password\" : \"${2}\", \"endpoint\" : \"${my_endpoint}\" }"
@@ -94,9 +91,7 @@ function createEvent {
 	esac
 
     # echo ${body}
-    result=$(curl -X POST -H "Content-Type: application/json" \
-        -d "${body}" \
-        ${my_nodered}/event 2>/dev/null)
+    result=$(curl -X POST -H "Content-Type: application/json" -d "${body}" ${my_nodered}/event 2>/dev/null)
     echo ${result}
 }
 
@@ -191,67 +186,77 @@ water_id=$(echo ${result} | jq '.resourceOut.id')
 ##### First we transfer the gown from the owner to the hospital
 ##### The cleaner is still the primary accountable
 ################################################################################
-result=$(transferCustody ${cleaner_token} ${cleaner_id} ${hospital_id} "Gown" ${gown_id} ${piece_unit} 1 ${locationA} "transfer to hospital")
+transfer_note='Transfer gowns to hospital'
+result=$(transferCustody ${cleaner_token} ${cleaner_id} ${hospital_id} "Gown" ${gown_id} ${piece_unit} 1 ${locationA} "${transfer_note}")
 # echo "result is: ${result}"
-transfer_id=$(echo ${result} | jq '.transferID')
-# echo "transfer_id is: ${transfer_id}" 
+event_id=$(echo ${result} | jq '.transferID')
+# echo "${transfer_note}: event id is ${event_id}"
 
 ################################################################################
 ##### Perform the process at the hospital
 ################################################################################
-result=$(createProcess ${hospital_token} "Use Gowns" "Use process performed at ${lochospital_name}")
+process_name='Process Use Gowns'
+result=$(createProcess ${hospital_token} "${process_name}" "Use process performed at ${lochospital_name}")
 # echo "result is: ${result}"
-useprocess_id=$(echo ${result} | jq '.processId')
-# echo "useprocess_id is: ${useprocess_id}"
+process_id=$(echo ${result} | jq '.processId')
+# echo "${process_name}: process id is ${process_id}"
 
-result=$(createEvent "work" ${hospital_token} "perform surgery" ${hospital_id} ${hospital_id} ${time_unit} 80 ${useprocess_id})
+event_note='work perform surgery'
+result=$(createEvent "work" ${hospital_token} "${event_note}" ${hospital_id} ${hospital_id} ${time_unit} 80 ${useprocess_id})
 # echo "result is: ${result}"
 event_id=$(echo ${result} | jq '.eventId')
-# echo "clean_id is: ${clean_id}" 
+# echo "${event_note}: event id is ${event_id}"
 
-result=$(createEvent "accept" ${hospital_token} "use for surgery" ${cleaner_id} ${hospital_id} ${piece_unit} 1 ${useprocess_id} ${gown_id})
+event_note='accept use for surgery'
+result=$(createEvent "accept" ${hospital_token} "${event_note}" ${cleaner_id} ${hospital_id} ${piece_unit} 1 ${useprocess_id} ${gown_id})
 # echo "result is: ${result}"
 event_id=$(echo ${result} | jq '.eventId')
-# echo "clean_id is: ${clean_id}" 
+# echo "${event_note}: event id is ${event_id}"
 
-result=$(createEvent "modify" ${hospital_token} "dirty after use" ${cleaner_id} ${hospital_id} ${piece_unit} 1 ${useprocess_id} ${gown_id})
+event_note='modify dirty after use'
+result=$(createEvent "modify" ${hospital_token} "${event_note}" ${cleaner_id} ${hospital_id} ${piece_unit} 1 ${useprocess_id} ${gown_id})
 # echo "result is: ${result}"
 event_id=$(echo ${result} | jq '.eventId')
-# echo "clean_id is: ${clean_id}" 
+# echo "${event_note}: event id is ${event_id}"
 
 ################################################################################
 ##### Transfer back to the owner (the cleaner)
 ################################################################################
-
-result=$(transferCustody ${hospital_token} ${hospital_id} ${cleaner_id} "Gown" ${gown_id} ${piece_unit} 1 ${locationB} "transfer to cleaner")
+transfer_note='Transfer gowns to cleaner'
+result=$(transferCustody ${hospital_token} ${hospital_id} ${cleaner_id} "Gown" ${gown_id} ${piece_unit} 1 ${locationB} "${transfer_note}")
 # echo "result is: ${result}"
-transfer_id=$(echo ${result} | jq '.transferID')
-# echo "transfer_id is: ${transfer_id}" 
+event_id=$(echo ${result} | jq '.transferID')
+# echo "${transfer_note}: event id is ${event_id}"
 
 ################################################################################
 ##### Perform the process at the cleaner
 ################################################################################
-result=$(createProcess ${cleaner_token} "Clean Gowns" "Cleaning process performed at ${loccleaner_name}")
+process_name='Process Clean Gowns'
+result=$(createProcess ${cleaner_token} "${process_name}" "Cleaning process performed at ${loccleaner_name}")
 # echo "result is: ${result}"
-cleanprocess_id=$(echo ${result} | jq '.processId')
-# echo "cleanprocess_id is: ${cleanprocess_id}" 
+process_id=$(echo ${result} | jq '.processId')
+# echo "${process_name}: process id is ${process_id}"
 
-result=$(createEvent "accept" ${cleaner_token} "to be cleaned" ${cleaner_id} ${cleaner_id} ${piece_unit} 1 ${cleanprocess_id} ${gown_id})
+event_note='accept gowns to be cleaned'
+result=$(createEvent "accept" ${cleaner_token} "${event_note}" ${cleaner_id} ${cleaner_id} ${piece_unit} 1 ${cleanprocess_id} ${gown_id})
 # echo "result is: ${result}"
 event_id=$(echo ${result} | jq '.eventId')
-# echo "clean_id is: ${clean_id}" 
+# echo "${event_note}: event id is ${event_id}"
 
-result=$(createEvent "consume" ${cleaner_token} "water for the washing" ${cleaner_id} ${cleaner_id} ${volume_unit} 25 ${cleanprocess_id} ${water_trackid})
+event_note='consume water for the washing'
+result=$(createEvent "consume" ${cleaner_token} "${event_note}" ${cleaner_id} ${cleaner_id} ${volume_unit} 25 ${cleanprocess_id} ${water_trackid})
 # echo "result is: ${result}"
 event_id=$(echo ${result} | jq '.eventId')
-# echo "clean_id is: ${clean_id}" 
+# echo "${event_note}: event id is ${event_id}"
 
-result=$(createEvent "consume" ${cleaner_token} "soap for the washing" ${cleaner_id} ${cleaner_id} ${mass_unit} 50 ${cleanprocess_id} ${soap_trackid})
+event_note='consume soap for the washing'
+result=$(createEvent "consume" ${cleaner_token} "${event_note}" ${cleaner_id} ${cleaner_id} ${mass_unit} 50 ${cleanprocess_id} ${soap_trackid})
 # echo "result is: ${result}"
 event_id=$(echo ${result} | jq '.eventId')
-# echo "clean_id is: ${clean_id}" 
+# echo "${event_note}: event id is ${event_id}"
 
-result=$(createEvent "modify" ${cleaner_token} "clean after washing" ${cleaner_id} ${cleaner_id} ${piece_unit} 1 ${cleanprocess_id} ${gown_id})
+event_note='modify clean after washing'
+result=$(createEvent "modify" ${cleaner_token} "${event_note}" ${cleaner_id} ${cleaner_id} ${piece_unit} 1 ${cleanprocess_id} ${gown_id})
 # echo "result is: ${result}"
 event_id=$(echo ${result} | jq '.eventId')
-# echo "clean_id is: ${clean_id}" 
+# echo "${event_note}: event id is ${event_id}"
