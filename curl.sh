@@ -69,7 +69,7 @@ function createProcess {
 
 function transferCustody {
 
-    body="{\"token\" : ${1}, \"provider_id\" : ${2}, \"receiver_id\" : ${3}, \"name\" : \"${4}\", \"resource_id\" : ${5}, \"unit_id\" : ${6}, \"amount\" : ${7}, \"location_id\" : ${8}, \"note\": \"${9}\", \"endpoint\" : \"${my_endpoint}\" }"
+    body="{\"token\" : ${1}, \"provider_id\" : ${2}, \"receiver_id\" : ${3}, \"resource_id\" : ${4}, \"unit_id\" : ${5}, \"amount\" : ${6}, \"location_id\" : ${7}, \"note\": \"${8}\", \"endpoint\" : \"${my_endpoint}\" }"
     # echo "${body}"
     result=$(curl -X POST -H "Content-Type: application/json" -d "${body}" ${my_nodered}/transfer 2>/dev/null)
     echo ${result}
@@ -79,7 +79,7 @@ function createEvent {
     
     action=${1}
     common_body="\"action\" : \"${action}\", \"token\" : ${2},  \"note\": \"${3}\", \"provider_id\" : ${4}, \"receiver_id\" : ${5}, \"unit_id\" : ${6}, \"amount\" : ${7}, \"endpoint\" : \"${my_endpoint}\""
-    # echo ${common_body}
+    # echo "${common_body}""
 
     case "${action}" in
         "work")
@@ -99,7 +99,7 @@ function createEvent {
         ;;
 	esac
 
-    # echo ${body}
+    # echo "${body}"
     result=$(curl -X POST -H "Content-Type: application/json" -d "${body}" ${my_nodered}/event 2>/dev/null)
     echo ${result}
 }
@@ -121,9 +121,10 @@ hospital_token=$(echo ${result} | jq '.token')
 hospital_id=$(echo ${result} | jq '.id')
 if [ "${do_debug} " == "true " ]
 then
-    echo "result is: ${result}"
-    echo "hospital_token is ${hospital_token}, hospital_id is ${hospital_id}" 
+    echo "DEBUG: $(date) -  result is: ${result}"
+    echo "DEBUG: $(date) -  hospital_token is ${hospital_token}" 
 fi
+echo "$(date) - Logged user hospital in, id: ${hospital_id}"
 
 
 
@@ -132,79 +133,95 @@ cleaner_token=$(echo ${result} | jq '.token')
 cleaner_id=$(echo ${result} | jq '.id')
 if [ "${do_debug} " == "true " ]
 then
-    echo "result is: ${result}"
-    echo "cleaner_token is ${cleaner_token}, cleaner_id is ${cleaner_id}" 
+    echo "DEBUG: $(date) -  result is: ${result}"
+    echo "DEBUG: $(date) -  cleaner_token is ${cleaner_token}" 
 fi
-
+echo "$(date) - Logged user cleaner in, id: ${cleaner_id}"
 
 
 if [ "${do_init} " == "true " ] || [ ! -f "${init_file}" ]
 then
-    echo "Creating units"
+    echo "$(date) - Creating units"
     ################################################################################
     ##### Create locations and units of measures
     ################################################################################
 
     result=$(createLocation ${hospital_token} "${lochospital_name}" ${lochospital_lat} ${lochospital_long} "${lochospital_addr}" ${lochospital_note})
-    locationA=$(echo ${result} | jq '.location')
+    lochospital_id=$(echo ${result} | jq '.location')
     if [ "${do_debug} " == "true " ]
     then
-        echo "result is: ${result}"
-        echo "locationA is ${locationA}" 
+        echo "DEBUG: $(date) -  result is: ${result}"
+        # echo "$(date) - lochospital_id is ${lochospital_id}" 
     fi
+    echo "$(date) - Created location for ${lochospital_name}, id: ${lochospital_id}"
 
+    
     result=$(createLocation ${cleaner_token} "${loccleaner_name}" ${loccleaner_lat} ${loccleaner_long} "${loccleaner_addr}" ${loccleaner_note})
-    locationB=$(echo ${result} | jq '.location')
+    loccleaner_id=$(echo ${result} | jq '.location')
     if [ "${do_debug} " == "true " ]
     then
-        echo "result is: ${result}"
-        echo "locationB is ${locationB}"
+        echo "DEBUG: $(date) -  result is: ${result}"
+        # echo "$(date) - loccleaner_id is ${loccleaner_id}"
     fi
-    
+    echo "$(date) - Created location for ${loccleaner_name}, id: ${loccleaner_id}"
+
     result=$(createUnit ${cleaner_token} "u_piece" "om2:one")
     piece_unit=$(echo ${result} | jq '.unit')
     if [ "${do_debug} " == "true " ]
     then
-        echo "result is: ${result}"
-        echo "Piece unit is ${piece_unit}" 
+        echo "DEBUG: $(date) -  result is: ${result}"
+        # echo "$(date) - Piece unit is ${piece_unit}" 
     fi
+    echo "$(date) - Created unit for gowns, id: ${piece_unit}"
 
     result=$(createUnit ${cleaner_token} "kg" "om2:kilogram")
     mass_unit=$(echo ${result} | jq '.unit')
     if [ "${do_debug} " == "true " ]
     then
-        echo "result is: ${result}"
-        echo "Mass unit is ${mass_unit}" 
+        echo "DEBUG: $(date) -  result is: ${result}"
+        # echo "$(date) - Mass unit is ${mass_unit}" 
     fi
+    echo "$(date) - Created unit for mass (kg), id: ${mass_unit}"
 
     result=$(createUnit ${cleaner_token} "lt" "om2:litre")
     volume_unit=$(echo ${result} | jq '.unit')
     if [ "${do_debug} " == "true " ]
     then
-        echo "result is: ${result}"
-        echo "Volume unit is ${volume_unit}" 
+        echo "DEBUG: $(date) -  result is: ${result}"
+        # echo "$(date) - Volume unit is ${volume_unit}"
     fi
+    echo "$(date) - Created unit for volume (litre), id: ${volume_unit}"
     
     result=$(createUnit ${hospital_token} "h" "om2:hour")
     time_unit=$(echo ${result} | jq '.unit')
     if [ "${do_debug} " == "true " ]
     then
-        echo "result is: ${result}"
-        echo "Time unit is ${time_unit}" 
+        echo "DEBUG: $(date) -  result is: ${result}"
+        # echo "$(date) - Time unit is ${time_unit}" 
     fi
-    jq -n "{locationA: ${locationA},  locationB: ${locationB}, piece_unit: ${piece_unit}, mass_unit: ${mass_unit}, volume_unit: ${volume_unit}, time_unit: ${time_unit}}" > ${init_file}
+    echo "$(date) - Create unit for time (hour), id: ${time_unit}"
+
+    # Save units to file
+    jq -n "{lochospital_id: ${lochospital_id},  loccleaner_id: ${loccleaner_id}, piece_unit: ${piece_unit}, mass_unit: ${mass_unit}, volume_unit: ${volume_unit}, time_unit: ${time_unit}}" > ${init_file}
 else
-    echo "Reading units from file ${init_file}"
-    locationA=$(cat ${init_file} | jq '.locationA')
-    locationB=$(cat ${init_file} | jq '.locationB')
+    echo "$(date) - Reading units from file ${init_file}"
+    lochospital_id=$(cat ${init_file} | jq '.lochospital_id')
+    loccleaner_id=$(cat ${init_file} | jq '.loccleaner_id')
     piece_unit=$(cat ${init_file} | jq '.piece_unit')
     mass_unit=$(cat ${init_file} | jq '.mass_unit')
     volume_unit=$(cat ${init_file} | jq '.volume_unit')
     time_unit=$(cat ${init_file} | jq '.time_unit')
-    if [ "${do_debug} " == "true " ]
-    then
-        echo "locationA: ${locationA},  locationB is ${locationB}, piece_unit: ${piece_unit}, mass_unit: ${mass_unit}, volume_unit: ${volume_unit}, time_unit: ${time_unit}"
-    fi
+    # if [ "${do_debug} " == "true " ]
+    # then
+    #     echo "$(date) - lochospital_id: ${lochospital_id},  loccleaner_id is ${loccleaner_id}, piece_unit: ${piece_unit}, mass_unit: ${mass_unit}, volume_unit: ${volume_unit}, time_unit: ${time_unit}"
+    # fi
+    echo "$(date) - Read location for ${lochospital_name}, id: ${lochospital_id}"
+    echo "$(date) - Read location for ${loccleaner_name}, id: ${loccleaner_id}"
+    echo "$(date) - Read unit for gowns, id: ${piece_unit}"
+    echo "$(date) - Read unit for mass (kg), id: ${mass_unit}"
+    echo "$(date) - Read unit for volume (litre), id: ${volume_unit}"
+    echo "$(date) - Read unit for time (hour), id: ${time_unit}"
+
 fi
 
 ################################################################################
@@ -216,27 +233,25 @@ fi
 
 gown_trackid="gown-${RANDOM}"
 result=$(createResource ${cleaner_token} "${cleaner_id}" "Gown" ${gown_trackid} "${piece_unit}" 1)
-creategown_id=$(echo ${result} | jq '.eventId')
+event_id=$(echo ${result} | jq '.eventId')
 resourceIn_id=$(echo ${result} | jq '.resourceIn.id')
 gown_id=$(echo ${result} | jq '.resourceOut.id')
 if [ "${do_debug} " == "true " ]
 then
-    echo "result is: ${result}"
-    echo "creategown_id is: ${creategown_id}, gown_trackid is: ${gown_trackid}, gown_id is ${gown_id}" 
+    echo "DEBUG: $(date) -  result is: ${result}"
 fi
-
-
+echo "$(date) - Created 1 gown with tracking id: ${gown_trackid}, id: ${gown_id} owned by the cleaner, event id: ${event_id}"
 
 soap_trackid="soap-${RANDOM}"
 result=$(createResource ${cleaner_token} "${cleaner_id}" "Soap" ${soap_trackid} "${mass_unit}" 100)
-createsoap_id=$(echo ${result} | jq '.eventId')
+event_id=$(echo ${result} | jq '.eventId')
 resourceIn_id=$(echo ${result} | jq '.resourceIn.id')
 soap_id=$(echo ${result} | jq '.resourceOut.id')
 if [ "${do_debug} " == "true " ]
 then
-    echo "result is: ${result}"
-    echo "createsoap_id is: ${createsoap_id}, soap_trackid is: ${soap_trackid}, soap_id is ${soap_id}" 
+    echo "DEBUG: $(date) -  result is: ${result}"
 fi
+echo "$(date) - Created 100 kg soap with tracking id: ${soap_trackid}, id: ${soap_id} owned by the cleaner, event id: ${event_id}"
 
 water_trackid="water-${RANDOM}"
 result=$(createResource ${cleaner_token} "${cleaner_id}" "Water" ${water_trackid} "${volume_unit}" 50)
@@ -245,23 +260,22 @@ resourceIn_id=$(echo ${result} | jq '.resourceIn.id')
 water_id=$(echo ${result} | jq '.resourceOut.id')
 if [ "${do_debug} " == "true " ]
 then
-    echo "result is: ${result}"
-    echo "createwater_id is: ${event_id}, water_trackid is: ${water_trackid}, water_id is ${water_id}" 
+    echo "DEBUG: $(date) -  result is: ${result}"
 fi
-
+echo "$(date) - Created 50 liters water with tracking id: ${water_trackid}, id: ${water_id} owned by the cleaner, event id: ${event_id}"
 
 ################################################################################
 ##### First we transfer the gown from the owner to the hospital
 ##### The cleaner is still the primary accountable
 ################################################################################
 transfer_note='Transfer gowns to hospital'
-result=$(transferCustody ${cleaner_token} ${cleaner_id} ${hospital_id} "Gown" ${gown_id} ${piece_unit} 1 ${locationA} "${transfer_note}")
+result=$(transferCustody ${cleaner_token} ${cleaner_id} ${hospital_id} ${gown_id} ${piece_unit} 1 ${lochospital_id} "${transfer_note}")
 event_id=$(echo ${result} | jq '.transferID')
 if [ "${do_debug} " == "true " ]
 then
-    echo "result is: ${result}"
-    echo "${transfer_note}: event id is ${event_id}"
+    echo "DEBUG: $(date) -  result is: ${result}"
 fi
+echo "$(date) - Transferred custody of 1 gown to hospital with note: ${transfer_note}, event id: ${event_id}"
 
 ################################################################################
 ##### Perform the process at the hospital
@@ -271,52 +285,48 @@ result=$(createProcess ${hospital_token} "${process_name}" "Use process performe
 useprocess_id=$(echo ${result} | jq '.processId')
 if [ "${do_debug} " == "true " ]
 then
-    echo "result is: ${result}"
-    echo "${process_name}: useprocess id is ${useprocess_id}"
+    echo "DEBUG: $(date) -  result is: ${result}"
 fi
+echo "$(date) - Created process: ${process_name}, process id: ${useprocess_id}"
 
 event_note='work perform surgery'
 result=$(createEvent "work" ${hospital_token} "${event_note}" ${hospital_id} ${hospital_id} ${time_unit} 80 ${useprocess_id})
 event_id=$(echo ${result} | jq '.eventId')
 if [ "${do_debug} " == "true " ]
 then
-    echo "result is: ${result}"
-    echo "${event_note}: event id is ${event_id}"
+    echo "DEBUG: $(date) -  result is: ${result}"
 fi
-
+echo "$(date) - Created event: ${event_note}, event id: ${event_id}, action work 80 hours as input for process: ${useprocess_id}"
 
 event_note='accept use for surgery'
 result=$(createEvent "accept" ${hospital_token} "${event_note}" ${cleaner_id} ${hospital_id} ${piece_unit} 1 ${useprocess_id} ${gown_id})
 event_id=$(echo ${result} | jq '.eventId')
 if [ "${do_debug} " == "true " ]
 then
-    echo "result is: ${result}"
-    echo "${event_note}: event id is ${event_id}"
+    echo "DEBUG: $(date) -  result is: ${result}"
 fi
-
+echo "$(date) - Created event: ${event_note}, event id: ${event_id}, action accept 1 gown as input for process: ${useprocess_id}"
 
 event_note='modify dirty after use'
 result=$(createEvent "modify" ${hospital_token} "${event_note}" ${cleaner_id} ${hospital_id} ${piece_unit} 1 ${useprocess_id} ${gown_id})
 event_id=$(echo ${result} | jq '.eventId')
 if [ "${do_debug} " == "true " ]
 then
-    echo "result is: ${result}"
-    echo "${event_note}: event id is ${event_id}"
+    echo "DEBUG: $(date) -  result is: ${result}"
 fi
-
+echo "$(date) - Created event: ${event_note}, event id: ${event_id}, action modify 1 gown as output for process: ${useprocess_id}"
 
 ################################################################################
 ##### Transfer back to the owner (the cleaner)
 ################################################################################
 transfer_note='Transfer gowns to cleaner'
-result=$(transferCustody ${hospital_token} ${hospital_id} ${cleaner_id} "Gown" ${gown_id} ${piece_unit} 1 ${locationB} "${transfer_note}")
+result=$(transferCustody ${cleaner_token} ${cleaner_id} ${hospital_id} ${gown_id} ${piece_unit} 1 ${loccleaner_id} "${transfer_note}")
 event_id=$(echo ${result} | jq '.transferID')
 if [ "${do_debug} " == "true " ]
 then
-    echo "result is: ${result}"
-    echo "${transfer_note}: event id is ${event_id}"
+    echo "DEBUG: $(date) -  result is: ${result}"
 fi
-
+echo "$(date) - Transferred custody of 1 gown to cleaner with note: ${transfer_note}, event id: ${event_id}"
 
 ################################################################################
 ##### Perform the process at the cleaner
@@ -326,56 +336,50 @@ result=$(createProcess ${cleaner_token} "${process_name}" "Cleaning process perf
 cleanprocess_id=$(echo ${result} | jq '.processId')
 if [ "${do_debug} " == "true " ]
 then
-    echo "result is: ${result}"
-    echo "${process_name}: cleanprocess id is ${cleanprocess_id}"
+    echo "DEBUG: $(date) -  result is: ${result}"
 fi
-
+echo "$(date) - Created process: ${process_name}, process id: ${cleanprocess_id}"
 
 event_note='accept gowns to be cleaned'
 result=$(createEvent "accept" ${cleaner_token} "${event_note}" ${cleaner_id} ${cleaner_id} ${piece_unit} 1 ${cleanprocess_id} ${gown_id})
 event_id=$(echo ${result} | jq '.eventId')
 if [ "${do_debug} " == "true " ]
 then
-    echo "result is: ${result}"
-    echo "${event_note}: event id is ${event_id}"
+    echo "DEBUG: $(date) -  result is: ${result}"
 fi
-
+echo "$(date) - Created event: ${event_note}, event id: ${event_id}, action accept 1 gown as input for process: ${cleanprocess_id}"
 
 event_note='consume water for the washing'
 result=$(createEvent "consume" ${cleaner_token} "${event_note}" ${cleaner_id} ${cleaner_id} ${volume_unit} 25 ${cleanprocess_id} ${water_trackid})
 event_id=$(echo ${result} | jq '.eventId')
 if [ "${do_debug} " == "true " ]
 then
-    echo "result is: ${result}"
-    echo "${event_note}: event id is ${event_id}"
+    echo "DEBUG: $(date) -  result is: ${result}"
 fi
-
+echo "$(date) - Created event: ${event_note}, event id: ${event_id}, action consume 25 liters water as input for process: ${cleanprocess_id}"
 
 event_note='consume soap for the washing'
 result=$(createEvent "consume" ${cleaner_token} "${event_note}" ${cleaner_id} ${cleaner_id} ${mass_unit} 50 ${cleanprocess_id} ${soap_trackid})
 event_id=$(echo ${result} | jq '.eventId')
 if [ "${do_debug} " == "true " ]
 then
-    echo "result is: ${result}"
-    echo "${event_note}: event id is ${event_id}"
+    echo "DEBUG: $(date) -  result is: ${result}"
 fi
-
+echo "$(date) - Created event: ${event_note}, event id: ${event_id}, action consume 50 kg soap as input for process: ${cleanprocess_id}"
 
 event_note='modify clean after washing'
 result=$(createEvent "modify" ${cleaner_token} "${event_note}" ${cleaner_id} ${cleaner_id} ${piece_unit} 1 ${cleanprocess_id} ${gown_id})
 event_id=$(echo ${result} | jq '.eventId')
 if [ "${do_debug} " == "true " ]
 then
-    echo "result is: ${result}"
-    echo "${event_note}: event id is ${event_id}"
+    echo "DEBUG: $(date) -  result is: ${result}"
 fi
+echo "$(date) - Created event: ${event_note}, event id: ${event_id}, action modify 1 gown as output of process: ${cleanprocess_id}"
 
-
-echo "gown id is: ${gown_id}"
-
+echo "$(date) - Doing trace and track gown: ${gown_id}"
 result=$(traceTrack ${gown_id} 10)
 echo ${result} | jq '.'
 if [ "${do_debug} " == "true " ]
 then
-    echo "result is: ${result}"
+    echo "DEBUG: $(date) -  result is: ${result}"
 fi

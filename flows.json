@@ -8,14 +8,6 @@
         "env": []
     },
     {
-        "id": "cf663179164c69d1",
-        "type": "ui_tab",
-        "name": "one",
-        "icon": "dashboard",
-        "disabled": false,
-        "hidden": false
-    },
-    {
         "id": "a1f23e7f9e7ee37e",
         "type": "ui_base",
         "theme": {
@@ -759,7 +751,7 @@
         "type": "function",
         "z": "a9cf961a3a52160c",
         "name": "Transfer Custody",
-        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.token;\n\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\nconst note = msg.payload.note;\nconst provider_id = msg.payload.provider_id;\nconst receiver_id = msg.payload.receiver_id;\nconst resource_id = msg.payload.resource_id;\nconst unit_id = msg.payload.unit_id;\nconst amount = msg.payload.amount;\nconst location_id = msg.payload.location_id;\nconst name = msg.payload.name;\n\nconst ts = new Date(Date.now());\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query:    `mutation($event:EconomicEventCreateParams!) {\n                createEconomicEvent(event:$event) {\n                    economicEvent {\n                        id\n                        provider {\n                            id\n                            name\n                            note\n                        }\n                        resourceQuantity {\n                            hasNumericalValue\n                            hasUnit {\n                                label\n                                symbol\n                            }\n                        }\n                        toResourceInventoriedAs { \n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            primaryAccountable {\n                            id\n                          }\n                        }\n                        resourceInventoriedAs {\n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            primaryAccountable {\n                            id\n                          }\n                        }\n                    }\n                }\n            }`,\n    variables: {\n        \"event\": {\n            \"note\": note,\n            \"action\": \"transfer-custody\",\n            \"provider\": provider_id, \n            \"receiver\": receiver_id, \n            \"toResourceInventoriedAs\": resource_id,\n            \"hasPointInTime\": ts,\n            \"atLocation\": location_id,\n            \"resourceQuantity\": {\n              \"hasUnit\": unit_id, \n              \"hasNumericalValue\": amount \n            }\n        },\n        \"newInventoriedResource\": { \n            \"name\": name\n        }\n    }\n})\n\n\nreturn msg;",
+        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.token;\n\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\nconst note = msg.payload.note;\nconst provider_id = msg.payload.provider_id;\nconst receiver_id = msg.payload.receiver_id;\nconst resource_id = msg.payload.resource_id;\nconst unit_id = msg.payload.unit_id;\nconst amount = msg.payload.amount;\nconst location_id = msg.payload.location_id;\n\nconst ts = new Date(Date.now());\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query:    `mutation($event:EconomicEventCreateParams!) {\n                createEconomicEvent(event:$event) {\n                    economicEvent {\n                        id\n                        provider {\n                            id\n                            name\n                            note\n                        }\n                        resourceQuantity {\n                            hasNumericalValue\n                            hasUnit {\n                                label\n                                symbol\n                            }\n                        }\n                        toResourceInventoriedAs { \n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            primaryAccountable {\n                            id\n                          }\n                        }\n                        resourceInventoriedAs {\n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            primaryAccountable {\n                            id\n                          }\n                        }\n                    }\n                }\n            }`,\n    variables: {\n        \"event\": {\n            \"note\": note,\n            \"action\": \"transfer-custody\",\n            \"provider\": provider_id, \n            \"receiver\": receiver_id, \n            \"resourceInventoriedAs\": resource_id,\n            \"hasPointInTime\": ts,\n            \"atLocation\": location_id,\n            \"resourceQuantity\": {\n              \"hasUnit\": unit_id, \n              \"hasNumericalValue\": amount \n            }\n        }\n    }\n})\n\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -769,7 +761,8 @@
         "y": 720,
         "wires": [
             [
-                "1f51d816c9254a8e"
+                "1f51d816c9254a8e",
+                "78bbd41a6c118d6b"
             ]
         ]
     },
@@ -936,14 +929,14 @@
         "id": "2db04210e5b35643",
         "type": "function",
         "z": "a9cf961a3a52160c",
-        "name": "Create Event",
+        "name": "Trace & Track",
         "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.token;\n\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\nvar variables = {\n    \"id\": msg.payload.resource_id,\n    \"recurseLimit\": msg.payload.recursion,\n\n};\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query:    `query($id:ID!, $recurseLimit:Int!) {\n                economicResource(id: $id) {\n                    trace(recurseLimit: $recurseLimit) {...trace}\n                    track(recurseLimit: $recurseLimit) {...track}\n                }\n\n            }\n\n            fragment unit on Unit {\n                id symbol label\n            }\n\n            fragment measure on Measure {\n                hasUnit {...unit}\n                hasNumericalValue\n            }\n\n            fragment spatialThing on SpatialThing {\n                id\n                name\n                mappableAddress\n                note\n                geom\n                lat alt long\n            }\n\n            fragment economicResource on EconomicResource {\n                id\n                resourceName: name\n                note\n                primaryAccountable {id name displayUsername}\n                onhandQuantity {...measure}\n                accountingQuantity {...measure}\n                currentLocation {...spatialThing}\n                trackingIdentifier\n            }\n\n            fragment economicEvent on EconomicEvent {\n                id\n                action {id}\n                provider {id name displayUsername}\n                receiver {id name displayUsername}\n                resourceQuantity {...measure}\n                resourceClassifiedAs\n                resourceInventoriedAs {...economicResource}\n                note\n            }\n\n            fragment process on Process {\n                id\n                processName: name\n                note\n                inputs {...economicEvent}\n                outputs {...economicEvent}\n            }\n\n            fragment track on ProductionFlowItem {\n                ... on EconomicResource {__typename ...economicResource}\n                ... on EconomicEvent {__typename ...economicEvent}\n                ... on Process {__typename ...process}\n            }\n\n            fragment trace on ProductionFlowItem {\n                ... on EconomicResource {__typename ...economicResource}\n                ... on EconomicEvent {__typename ...economicEvent}\n                ... on Process {__typename ...process}\n}`,\n    variables: variables\n})\n\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 190,
+        "x": 200,
         "y": 1000,
         "wires": [
             [
@@ -956,7 +949,7 @@
         "type": "debug",
         "z": "a9cf961a3a52160c",
         "name": "",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
