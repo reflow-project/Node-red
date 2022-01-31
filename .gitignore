@@ -4,3 +4,5 @@
 .config.runtime.json
 .config.users.json
 flows_cred.json
+MP-demo.json
+MP-shared.json

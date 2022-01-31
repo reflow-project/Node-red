@@ -1,18 +1,35 @@
 # In case we will read one day some data from disk, we do not need to do the init, currently not supported
-if [ "${1} " = "Y " ]
+case "${1}" in
+        "demo")
+            my_endpoint='http://reflow-demo.dyne.org:4000/api/explore'
+        ;;
+        "shared")
+            my_endpoint='http://135.181.35.156:4000/api/explore'
+        ;;
+        *)
+            echo "Please specify a valid back-end"
+            exit -1
+        ;;
+esac
+
+# perform init or read units from disk
+if [ "${2} " = "Y " ]
 then
     do_init="true"
 fi
 
-if [ "${2} " = "Y " ]
+if [ "${3} " = "Y " ]
 then
     do_debug="true"
 fi
 
-init_file='init.json'
 my_nodered='localhost:1880/isolationgowns'
 # my_nodered='http://zorro.free2air.net:1880/isolationgowns'
-my_endpoint='http://135.181.35.156:4000/api/explore'
+# my_endpoint='http://135.181.35.156:4000/api/explore'
+# my_endpoint='http://reflow-demo.dyne.org:4000/api/explore'
+
+machine=$(echo "${my_endpoint}" | sed 's/http:\/\/\(.*\):4000\/api\/explore/\1/g')
+init_file="init_${machine}.json"
 
 hospital_username='stefano+olvg@waag.org'
 hospital_password='PasswordOLVG1'
@@ -124,7 +141,7 @@ then
     echo "DEBUG: $(date) -  result is: ${result}"
     echo "DEBUG: $(date) -  hospital_token is ${hospital_token}" 
 fi
-echo "$(date) - Logged user hospital in, id: ${hospital_id}"
+echo "$(date) - Logged user hospital in, id: ${hospital_id}, token: ${hospital_token}"
 
 
 
@@ -136,7 +153,7 @@ then
     echo "DEBUG: $(date) -  result is: ${result}"
     echo "DEBUG: $(date) -  cleaner_token is ${cleaner_token}" 
 fi
-echo "$(date) - Logged user cleaner in, id: ${cleaner_id}"
+echo "$(date) - Logged user cleaner in, id: ${cleaner_id}, token: ${cleaner_token}"
 
 
 if [ "${do_init} " == "true " ] || [ ! -f "${init_file}" ]
