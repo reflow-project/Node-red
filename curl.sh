@@ -1,4 +1,12 @@
-# In case we will read one day some data from disk, we do not need to do the init, currently not supported
+. ./.credentials.sh
+if [ "${hospital_username} " == " " ] || [ "${hospital_password} " == " "  ] || [ "${cleaner_username} " == " " ] || [ "${cleaner_password} " == " " ]
+then
+    echo "credentials not set"
+    echo "==${hospital_username}==${hospital_password}==${cleaner_username}==${cleaner_password}=="
+    exit -1
+fi
+
+# read the endpoint
 case "${1}" in
         "demo")
             my_endpoint='http://reflow-demo.dyne.org:4000/api/explore'
@@ -31,17 +39,11 @@ my_nodered='localhost:1880/isolationgowns'
 machine=$(echo "${my_endpoint}" | sed 's/http:\/\/\(.*\):4000\/api\/explore/\1/g')
 init_file="init_${machine}.json"
 
-hospital_username='stefano+olvg@waag.org'
-hospital_password='PasswordOLVG1'
-
 lochospital_name='OLVG'
 lochospital_lat='52.35871773455108'
 lochospital_long='4.916762398221842'
 lochospital_addr='Oosterpark 9, 1091 AC Amsterdam'
 lochospital_note='olvg.nl'
-
-cleaner_username='stefano+cls@waag.org'
-cleaner_password='PasswordCL1'
 
 loccleaner_name='CleanLease Eindhoven'
 loccleaner_lat='51.47240440868687'
@@ -141,8 +143,12 @@ then
     echo "DEBUG: $(date) -  result is: ${result}"
     echo "DEBUG: $(date) -  hospital_token is ${hospital_token}" 
 fi
+if [ "${hospital_token} " == " " ]
+then
+    echo "Login failed for ${hospital_username}"
+    exit -1
+fi
 echo "$(date) - Logged user hospital in, id: ${hospital_id}, token: ${hospital_token}"
-
 
 
 result=$(doLogin ${cleaner_username} ${cleaner_password})
@@ -153,8 +159,14 @@ then
     echo "DEBUG: $(date) -  result is: ${result}"
     echo "DEBUG: $(date) -  cleaner_token is ${cleaner_token}" 
 fi
+if [ "${cleaner_token} " == " " ]
+then
+    echo "Login failed for ${cleaner_username}"
+    exit -1
+fi
 echo "$(date) - Logged user cleaner in, id: ${cleaner_id}, token: ${cleaner_token}"
 
+exit
 
 if [ "${do_init} " == "true " ] || [ ! -f "${init_file}" ]
 then
