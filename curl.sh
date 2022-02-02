@@ -9,7 +9,7 @@ fi
 # read the endpoint
 case "${1}" in
         "demo")
-            my_endpoint='http://reflow-demo.dyne.org:4000/api/explore'
+            my_endpoint='https://reflow-demo.dyne.org/api/explore'
         ;;
         "shared")
             my_endpoint='http://135.181.35.156:4000/api/explore'
@@ -36,7 +36,7 @@ my_nodered='localhost:1880/isolationgowns'
 # my_endpoint='http://135.181.35.156:4000/api/explore'
 # my_endpoint='http://reflow-demo.dyne.org:4000/api/explore'
 
-machine=$(echo "${my_endpoint}" | sed 's/http:\/\/\(.*\):4000\/api\/explore/\1/g')
+machine=$(echo "${my_endpoint}" | sed 's/http[s]*:\/\/\(.*\)[:0-9]*\/api\/explore/\1/g')
 init_file="init_${machine}.json"
 
 lochospital_name='OLVG'
@@ -165,8 +165,6 @@ then
     exit -1
 fi
 echo "$(date) - Logged user cleaner in, id: ${cleaner_id}, token: ${cleaner_token}"
-
-exit
 
 if [ "${do_init} " == "true " ] || [ ! -f "${init_file}" ]
 then
