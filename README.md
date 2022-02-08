@@ -6,10 +6,12 @@ reflow-nodered
 This repository contains a simple REST API interface implemented in Node-red (running locally in Docker) to the GraphQL interface offered by Bonfire, 
 and a bash script that makes use of this interface to enter data relative to the following flow:
 
-An isolation gown is created by a company that also takes care of the cleaning, it is transported to the hospital, 
-it is used to perform surgery and therefore becomes dirty, it is transported back to the owner company, and it is washed there.
+An isolation gown is created by a company that also takes care of the cleaning --> it is transported to the hospital
+--> it is used to perform surgery and therefore becomes dirty --> it is transported back to the owner company --> it is washed there.
 
-The cycle potentially repeats endlessy (or for a number of times)
+The cycle potentially repeats endlessy (or for a number of times), in the script is only executed once.
+
+The goal of the script is to generate a Material Passport for the Isolation Gown resource, and that is what the script outputs at the end, and it is logged in the file `MP-<name of Bonfire machine>.log`.
 
 ### Installation
 
@@ -39,7 +41,12 @@ Initialisation is required when you need to create units of measures and locatio
 (named as `init_<instance's name>.json`, for ex. `init_reflow-demo.dyne.org.json`) so not to have to create it again.
 
 ### Screenshots
+The following screenshot shows the tab in Node-red where the HTTP endpoints are defined that encapsulate the GraphQL calls to Bonfire. These endpoints are called by the script `curl.sh` to enter the simple flow described above in Bonfire.
 
 ![Node-red tab with endpoints](/screenshots/endpoints.png?raw=true "Node-red tab with endpoints")
 
+The following screenshot shows a fragment of the code used to process the form data received by the Event endpoint to trasform it in a GraphQL request.
+
 ![Event endpoint processing code](/screenshots/codenode.png?raw=true "Event endpoint processing code")
+
+As mentioned above, the output generate by running the script is in `MP-<name of Bonfire machine>.log`.
