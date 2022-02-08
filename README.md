@@ -38,4 +38,8 @@ Then you can run the script as following:
 Initialisation is required when you need to create units of measures and locations of agents, and once done these data is stored on file 
 (named as `init_<instance's name>.json`, for ex. `init_reflow-demo.dyne.org.json`) so not to have to create it again.
 
+### Screenshots
 
+![Node-red tab with endpoints](/screenshots/endpoints.png?raw=true "Node-red tab with endpoints")
+
+![Event endpoint processing code](/screenshots/codenode.png?raw=true "Event endpoint processing code")
