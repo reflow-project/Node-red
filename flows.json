@@ -430,10 +430,10 @@
         "id": "cf3e88999b724618",
         "type": "comment",
         "z": "a9cf961a3a52160c",
-        "name": "Perform Login",
+        "name": "Perform Login of agents",
         "info": "",
-        "x": 70,
-        "y": 140,
+        "x": 110,
+        "y": 160,
         "wires": []
     },
     {
@@ -977,5 +977,65 @@
                 "2db04210e5b35643"
             ]
         ]
+    },
+    {
+        "id": "dff9e47cf74eef5a",
+        "type": "comment",
+        "z": "a9cf961a3a52160c",
+        "name": "Create locations for agents",
+        "info": "",
+        "x": 110,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "5ecbcce4000d69b9",
+        "type": "comment",
+        "z": "a9cf961a3a52160c",
+        "name": "Create units of measurements for resources",
+        "info": "",
+        "x": 170,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "c3577fc8fe24f2f3",
+        "type": "comment",
+        "z": "a9cf961a3a52160c",
+        "name": "Create resources",
+        "info": "",
+        "x": 80,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "bd48eea69ad3c686",
+        "type": "comment",
+        "z": "a9cf961a3a52160c",
+        "name": "Create process to encapsulate events",
+        "info": "",
+        "x": 150,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "ca0a726a4281a41b",
+        "type": "comment",
+        "z": "a9cf961a3a52160c",
+        "name": "Create event Transfer-custody",
+        "info": "",
+        "x": 120,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "12a3dd4123e21dbd",
+        "type": "comment",
+        "z": "a9cf961a3a52160c",
+        "name": "Create events with other actions",
+        "info": "",
+        "x": 130,
+        "y": 800,
+        "wires": []
     }
 ]
