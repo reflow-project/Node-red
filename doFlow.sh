@@ -151,8 +151,7 @@ then
     echo "Login failed for ${hospital_username}"
     exit -1
 fi
-echo "$(date) - Logged user hospital in, id: ${hospital_id}, token: ${hospital_token}"
-
+echo "$(date) - Logged user hospital in, id: ${hospital_id}"
 
 result=$(doLogin ${cleaner_username} ${cleaner_password})
 cleaner_token=$(echo ${result} | jq '.token')
@@ -167,7 +166,7 @@ then
     echo "Login failed for ${cleaner_username}"
     exit -1
 fi
-echo "$(date) - Logged user cleaner in, id: ${cleaner_id}, token: ${cleaner_token}"
+echo "$(date) - Logged user cleaner in, id: ${cleaner_id}"
 
 if [ "${do_init} " == "true " ] || [ ! -f "${init_file}" ]
 then
