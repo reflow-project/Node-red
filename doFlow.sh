@@ -72,13 +72,6 @@ function createUnit {
     echo ${result}
 }
 
-function createResource {
-    body="{\"token\" : ${1}, \"agent_id\" : ${2}, \"resource_name\" : \"${3}\", \"resource_id\" : \"${4}\", \"unit_id\" : ${5}, \"amount\" : ${6}, \"endpoint\" : \"${my_endpoint}\" }"
-    # echo "${body}"
-    result=$(curl -X POST -H "Content-Type: application/json" -d "${body}" ${my_nodered}/resource 2>/dev/null)
-    echo ${result}
-}
-
 function createProcess {
     body="{\"token\" : ${1}, \"process_name\" : \"${2}\", \"process_note\" : \"${3}\", \"endpoint\" : \"${my_endpoint}\" }"
     # echo "${body}"
@@ -91,6 +84,13 @@ function transferCustody {
     body="{\"token\" : ${1}, \"provider_id\" : ${2}, \"receiver_id\" : ${3}, \"resource_id\" : ${4}, \"unit_id\" : ${5}, \"amount\" : ${6}, \"location_id\" : ${7}, \"note\": \"${8}\", \"endpoint\" : \"${my_endpoint}\" }"
     # echo "${body}"
     result=$(curl -X POST -H "Content-Type: application/json" -d "${body}" ${my_nodered}/transfer 2>/dev/null)
+    echo ${result}
+}
+
+function createResource {
+    body="{\"token\" : ${1}, \"agent_id\" : ${2}, \"resource_name\" : \"${3}\", \"resource_id\" : \"${4}\", \"unit_id\" : ${5}, \"amount\" : ${6}, \"processOut_id\" : ${7}, \"endpoint\" : \"${my_endpoint}\" }"
+    # echo "${body}"
+    result=$(curl -X POST -H "Content-Type: application/json" -d "${body}" ${my_nodered}/resource 2>/dev/null)
     echo ${result}
 }
 
@@ -112,6 +112,9 @@ function createEvent {
         ;;
         "consume")
             body="{ ${common_body}, \"processIn_id\" : ${8}, \"resource_id\" : \"${9}\"}"
+        ;;
+        "produce")
+            body="{ ${common_body}, \"processOut_id\" : ${8}, \"resourcetrack_id\" : \"${9}\", \"resource_name\" : \"${10}\"}"
         ;;
         *)
             echo "Please specify a valid action"
@@ -257,20 +260,17 @@ fi
 ##### -soap to wash the gown
 ##### -water to wash the gown
 ################################################################################
-
-gown_trackid="gown-${RANDOM}"
-result=$(createResource ${cleaner_token} "${cleaner_id}" "Gown" ${gown_trackid} "${piece_unit}" 1)
-event_id=$(echo ${result} | jq '.eventId')
-resourceIn_id=$(echo ${result} | jq '.resourceIn.id')
-gown_id=$(echo ${result} | jq '.resourceOut.id')
+process_name='Process create soap'
+result=$(createProcess ${cleaner_token} "${process_name}" "Create soap process performed by ${loccleaner_name}")
+createsoap_process_id=$(echo ${result} | jq '.processId')
 if [ "${do_debug} " == "true " ]
 then
     echo "DEBUG: $(date) -  result is: ${result}"
 fi
-echo "$(date) - Created 1 gown with tracking id: ${gown_trackid}, id: ${gown_id} owned by the cleaner, event id: ${event_id}"
+echo "$(date) - Created process: ${process_name}, process id: ${createsoap_process_id}"
 
 soap_trackid="soap-${RANDOM}"
-result=$(createResource ${cleaner_token} "${cleaner_id}" "Soap" ${soap_trackid} "${mass_unit}" 100)
+result=$(createResource ${cleaner_token} "${cleaner_id}" "Soap" ${soap_trackid} "${mass_unit}" 100 ${createsoap_process_id})
 event_id=$(echo ${result} | jq '.eventId')
 resourceIn_id=$(echo ${result} | jq '.resourceIn.id')
 soap_id=$(echo ${result} | jq '.resourceOut.id')
@@ -280,8 +280,17 @@ then
 fi
 echo "$(date) - Created 100 kg soap with tracking id: ${soap_trackid}, id: ${soap_id} owned by the cleaner, event id: ${event_id}"
 
+process_name='Process create water'
+result=$(createProcess ${cleaner_token} "${process_name}" "Create water process performed by ${loccleaner_name}")
+createwater_process_id=$(echo ${result} | jq '.processId')
+if [ "${do_debug} " == "true " ]
+then
+    echo "DEBUG: $(date) -  result is: ${result}"
+fi
+echo "$(date) - Created process: ${process_name}, process id: ${createwater_process_id}"
+
 water_trackid="water-${RANDOM}"
-result=$(createResource ${cleaner_token} "${cleaner_id}" "Water" ${water_trackid} "${volume_unit}" 50)
+result=$(createResource ${cleaner_token} "${cleaner_id}" "Water" ${water_trackid} "${volume_unit}" 50 ${createwater_process_id})
 event_id=$(echo ${result} | jq '.eventId')
 resourceIn_id=$(echo ${result} | jq '.resourceIn.id')
 water_id=$(echo ${result} | jq '.resourceOut.id')
@@ -290,6 +299,69 @@ then
     echo "DEBUG: $(date) -  result is: ${result}"
 fi
 echo "$(date) - Created 50 liters water with tracking id: ${water_trackid}, id: ${water_id} owned by the cleaner, event id: ${event_id}"
+
+process_name='Process create cotton'
+result=$(createProcess ${cleaner_token} "${process_name}" "Create cotton process performed by ${loccleaner_name}")
+createcotton_process_id=$(echo ${result} | jq '.processId')
+if [ "${do_debug} " == "true " ]
+then
+    echo "DEBUG: $(date) -  result is: ${result}"
+fi
+echo "$(date) - Created process: ${process_name}, process id: ${createcotton_process_id}"
+
+cotton_trackid="cotton-${RANDOM}"
+result=$(createResource ${cleaner_token} "${cleaner_id}" "Cotton" ${cotton_trackid} "${mass_unit}" 10 ${createcotton_process_id})
+event_id=$(echo ${result} | jq '.eventId')
+resourceIn_id=$(echo ${result} | jq '.resourceIn.id')
+cotton_id=$(echo ${result} | jq '.resourceOut.id')
+if [ "${do_debug} " == "true " ]
+then
+    echo "DEBUG: $(date) -  result is: ${result}"
+fi
+echo "$(date) - Created 10 kg cotton with tracking id: ${cotton_trackid}, id: ${cotton_id} owned by the cleaner, event id: ${event_id}"
+
+################################################################################
+##### First we create the gown from the cotton
+################################################################################
+process_name='Process sew gown'
+result=$(createProcess ${cleaner_token} "${process_name}" "Sew gown process performed by ${loccleaner_name}")
+sewgownprocess_id=$(echo ${result} | jq '.processId')
+if [ "${do_debug} " == "true " ]
+then
+    echo "DEBUG: $(date) -  result is: ${result}"
+fi
+echo "$(date) - Created process: ${process_name}, process id: ${createcotton_process_id}"
+
+event_note='consume cotton for sewing'
+result=$(createEvent "consume" ${cleaner_token} "${event_note}" ${cleaner_id} ${cleaner_id} ${mass_unit} 10 ${sewgownprocess_id} ${cotton_trackid})
+event_id=$(echo ${result} | jq '.eventId')
+if [ "${do_debug} " == "true " ]
+then
+    echo "DEBUG: $(date) -  result is: ${result}"
+fi
+echo "$(date) - Created event: ${event_note}, event id: ${event_id}, action consume 10 kg cotton as input for process: ${sewgownprocess_id}"
+
+
+event_note='produce gown'
+gown_trackid="gown-${RANDOM}"
+result=$(createEvent "produce" ${cleaner_token} "${event_note}" ${cleaner_id} ${cleaner_id} ${piece_unit} 1 ${sewgownprocess_id} ${gown_trackid} "Gown")
+event_id=$(echo ${result} | jq '.eventId')
+gown_id=$(echo ${result} | jq '.resourceId')
+if [ "${do_debug} " == "true " ]
+then
+    echo "DEBUG: $(date) -  result is: ${result}"
+fi
+echo "$(date) - Created event: ${event_note}, event id: ${event_id}, action produce 1 gown with tracking id: ${gown_trackid}, id: ${gown_id} owned by the cleaner as output of process: ${sewgownprocess_id}"
+
+# result=$(createResource ${cleaner_token} "${cleaner_id}" "Gown" ${gown_trackid} "${piece_unit}" 1)
+# event_id=$(echo ${result} | jq '.eventId')
+# resourceIn_id=$(echo ${result} | jq '.resourceIn.id')
+# gown_id=$(echo ${result} | jq '.resourceOut.id')
+# if [ "${do_debug} " == "true " ]
+# then
+#     echo "DEBUG: $(date) -  result is: ${result}"
+# fi
+# echo "$(date) - Created 1 gown with tracking id: ${gown_trackid}, id: ${gown_id} owned by the cleaner, event id: ${event_id}"
 
 ################################################################################
 ##### First we transfer the gown from the owner to the hospital
@@ -307,8 +379,8 @@ echo "$(date) - Transferred custody of 1 gown to hospital with note: ${transfer_
 ################################################################################
 ##### Perform the process at the hospital
 ################################################################################
-process_name='Process Use Gowns'
-result=$(createProcess ${hospital_token} "${process_name}" "Use process performed at ${lochospital_name}")
+process_name='Process Use Gown'
+result=$(createProcess ${hospital_token} "${process_name}" "Use gown process performed at ${lochospital_name}")
 useprocess_id=$(echo ${result} | jq '.processId')
 if [ "${do_debug} " == "true " ]
 then
@@ -358,8 +430,8 @@ echo "$(date) - Transferred custody of 1 gown to cleaner with note: ${transfer_n
 ################################################################################
 ##### Perform the process at the cleaner
 ################################################################################
-process_name='Process Clean Gowns'
-result=$(createProcess ${cleaner_token} "${process_name}" "Cleaning process performed at ${loccleaner_name}")
+process_name='Process Clean Gown'
+result=$(createProcess ${cleaner_token} "${process_name}" "Clean gown process performed at ${loccleaner_name}")
 cleanprocess_id=$(echo ${result} | jq '.processId')
 if [ "${do_debug} " == "true " ]
 then
@@ -410,3 +482,10 @@ if [ "${do_debug} " == "true " ]
 then
     echo "DEBUG: $(date) -  result is: ${result}"
 fi
+
+echo -e "Result from trace"
+echo ${result} | jq '.trace[] | .id + " " + .__typename + " " + .note'
+
+echo -e "Result from track"
+echo ${result} | jq '.track[] | .id + " " + .__typename + " " + .note'
+

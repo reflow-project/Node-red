@@ -21,27 +21,27 @@ Clone the repository, install the packages with `npm install` and you should be 
 
 ### Running
 
-Start Docker, when it is up run the scritp `start.sh`
+Start Docker, when it is up run the scritp `startNodeRed.sh`
 Connect to http://127.0.0.1:1880/ to see your Node-red instance.
 
 To run the script, you need to know which Bonfire instance to target; currently the script is aware of:
 - demo : 'https://reflow-demo.dyne.org/api/explore'
 - shared : 'http://135.181.35.156:4000/api/explore'
 
-If you are running your own instance, edit the script `curl.sh` in the case swith under `# read the endpoint`
+If you are running your own instance, edit the script `doFlow.sh` in the case swith under `# read the endpoint`
 
 For the chosen instance you need to have the credentials of two users, and set them in `.credentials.sh` 
 (an example of the fields and format of the file is in `.credentials.example.sh`)
 
 Then you can run the script as following:
 
-`./curl.sh <name of instance you set in script> N N` where the first N is for Not perform init and the second is for do Not print debug information.
+`./doFlow.sh <name of instance you set in script> N N` where the first N is for Not perform init and the second is for do Not print debug information.
 
 Initialisation is required when you need to create units of measures and locations of agents, and once done these data is stored on file 
 (named as `init_<instance's name>.json`, for ex. `init_reflow-demo.dyne.org.json`) so not to have to create it again.
 
 ### Screenshots
-The following screenshot shows the tab in Node-red where the HTTP endpoints are defined that encapsulate the GraphQL calls to Bonfire. These endpoints are called by the script `curl.sh` to enter the simple flow described above in Bonfire.
+The following screenshot shows the tab in Node-red where the HTTP endpoints are defined that encapsulate the GraphQL calls to Bonfire. These endpoints are called by the script `doFlow.sh` to enter the simple flow described above in Bonfire.
 
 ![Node-red tab with endpoints](/screenshots/endpoints.png?raw=true "Node-red tab with endpoints")
 
