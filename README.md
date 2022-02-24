@@ -27,6 +27,7 @@ Connect to http://127.0.0.1:1880/ to see your Node-red instance.
 To run the script, you need to know which Bonfire instance to target; currently the script is aware of:
 - demo : 'https://reflow-demo.dyne.org/api/explore'
 - shared : 'http://135.181.35.156:4000/api/explore'
+- test : 'https://reflow-void.zenr.io/api/explore'
 
 If you are running your own instance, edit the script `doFlow.sh` in the case swith under `# read the endpoint`
 
@@ -41,6 +42,8 @@ Initialisation is required when you need to create units of measures and locatio
 (named as `init_<instance's name>.json`, for ex. `init_reflow-demo.dyne.org.json`) so not to have to create it again.
 
 ### Screenshots
+(Please note: the screenshots are not regularly updated, they are used to give an idea of the system).
+
 The following screenshot shows the tab in Node-red where the HTTP endpoints are defined that encapsulate the GraphQL calls to Bonfire. These endpoints are called by the script `doFlow.sh` to enter the simple flow described above in Bonfire.
 
 ![Node-red tab with endpoints](/screenshots/endpoints.png?raw=true "Node-red tab with endpoints")
