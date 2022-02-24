@@ -117,7 +117,7 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 570,
+        "x": 610,
         "y": 500,
         "wires": []
     },
@@ -130,8 +130,8 @@
         "method": "post",
         "upload": false,
         "swaggerDoc": "",
-        "x": 50,
-        "y": 200,
+        "x": 90,
+        "y": 60,
         "wires": [
             [
                 "01f2e8dd1ac14440"
@@ -149,8 +149,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 570,
-        "y": 200,
+        "x": 610,
+        "y": 60,
         "wires": [
             [
                 "232a28ed71fceec6"
@@ -162,14 +162,14 @@
         "type": "function",
         "z": "a9cf961a3a52160c",
         "name": "Login Agent",
-        "func": "\n\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query: `mutation doLogin($username: String!, $password: String!) {\n            login(emailOrUsername: $username, password: $password) {\n                token\n            }\n          }`,\n  variables: {\"username\": msg.payload.username,\n              \"password\": msg.payload.password}\n})\n\nreturn msg;",
+        "func": "\n\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\nconst variables = {\n    \"username\": msg.payload.username,\n    \"password\": msg.payload.password\n    \n};\n\n// To get this in the debug output\nmsg.variables = variables\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query: `mutation doLogin($username: String!, $password: String!) {\n            login(emailOrUsername: $username, password: $password) {\n                token\n            }\n          }`,\n  variables: variables\n})\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 210,
-        "y": 200,
+        "x": 250,
+        "y": 60,
         "wires": [
             [
                 "ced9f63df845af74"
@@ -190,8 +190,8 @@
         "proxy": "",
         "authType": "",
         "senderr": false,
-        "x": 370,
-        "y": 200,
+        "x": 410,
+        "y": 60,
         "wires": [
             [
                 "d4b609db9190632b"
@@ -212,8 +212,8 @@
         "proxy": "",
         "authType": "",
         "senderr": false,
-        "x": 770,
-        "y": 200,
+        "x": 810,
+        "y": 60,
         "wires": [
             [
                 "bbeba4dd2bc281e6"
@@ -225,14 +225,14 @@
         "type": "function",
         "z": "a9cf961a3a52160c",
         "name": "Create Unit",
-        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.token;\n\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\nconst label = msg.payload.label;\nconst symbol = msg.payload.symbol;\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query: `mutation($unit:UnitCreateParams!) {\n            createUnit(unit: $unit) {\n                unit {\n                    id\n                }\n            }\n          }`,\n  variables: {\"unit\": {\n                        \"label\": label,\n                        \"symbol\": symbol\n                        }\n            }\n})\n\n\nreturn msg;",
+        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.token;\n\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\nconst label = msg.payload.label;\nconst symbol = msg.payload.symbol;\n\nconst variables = {\"unit\": {\n                        \"label\": label,\n                        \"symbol\": symbol\n                        }\n            };\n\n// To get this in the debug output\nmsg.variables = variables\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query: `mutation($unit:UnitCreateParams!) {\n            createUnit(unit: $unit) {\n                unit {\n                    id\n                }\n            }\n          }`,\n  variables: variables\n})\n\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 210,
-        "y": 360,
+        "x": 250,
+        "y": 220,
         "wires": [
             [
                 "41a31f091965c362"
@@ -253,8 +253,8 @@
         "proxy": "",
         "authType": "",
         "senderr": false,
-        "x": 410,
-        "y": 360,
+        "x": 450,
+        "y": 220,
         "wires": [
             [
                 "8aafa40d09d8bbe7"
@@ -281,8 +281,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 580,
-        "y": 360,
+        "x": 620,
+        "y": 220,
         "wires": [
             [
                 "7e3394bb6ca1da06"
@@ -294,14 +294,14 @@
         "type": "function",
         "z": "a9cf961a3a52160c",
         "name": "Create Location",
-        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.token;\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\nconst name = msg.payload.name;\nconst lat = msg.payload.lat;\nconst long = msg.payload.long;\nconst addr = msg.payload.addr;\nconst note = msg.payload.note;\n\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n    query: `mutation($location: SpatialThingCreateParams!) {\n            createSpatialThing(spatialThing: $location) {\n                spatialThing {\n                    id\n                }\n            }\n        }`,\n    variables: {\n        \"location\": {\n            \"name\": name,\n            \"alt\": 0,\n            \"lat\": lat,\n            \"long\": long,\n            \"mappableAddress\": addr,\n            \"note\": note\n        }\n    }\n})\n\n\nreturn msg;",
+        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.token;\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\nconst name = msg.payload.name;\nconst lat = msg.payload.lat;\nconst long = msg.payload.long;\nconst addr = msg.payload.addr;\nconst note = msg.payload.note;\n\nconst variables = {\n        \"location\": {\n            \"name\": name,\n            \"alt\": 0,\n            \"lat\": lat,\n            \"long\": long,\n            \"mappableAddress\": addr,\n            \"note\": note\n        }\n    };\n\n// To get this in the debug output\nmsg.variables = variables\n\n\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n    query: `mutation($location: SpatialThingCreateParams!) {\n            createSpatialThing(spatialThing: $location) {\n                spatialThing {\n                    id\n                }\n            }\n        }`,\n    variables: variables\n})\n\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 220,
-        "y": 280,
+        "x": 260,
+        "y": 140,
         "wires": [
             [
                 "cd0d405b431a7cdc"
@@ -322,8 +322,8 @@
         "proxy": "",
         "authType": "",
         "senderr": false,
-        "x": 410,
-        "y": 280,
+        "x": 450,
+        "y": 140,
         "wires": [
             [
                 "122698bde7168a3b"
@@ -335,13 +335,13 @@
         "type": "function",
         "z": "a9cf961a3a52160c",
         "name": "Create Process",
-        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.token;\n\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\nconst name = msg.payload.process_name;\nconst note = msg.payload.process_note;\n\nconst ts = new Date(Date.now());\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query: `mutation($process:ProcessCreateParams!) {\n\t  createProcess(process: $process) {\n\t\tprocess {\n\t\t  id\n\t\t}\n\t  }\n\t}\n`,\n  variables: {\n      \"process\": {\n        \"name\": name,\n        \"note\": note,\n        \"hasBeginning\": ts,\n        \"hasEnd\": ts\n      }\n  }\n})\n\nreturn msg;",
+        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.token;\n\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\nconst name = msg.payload.process_name;\nconst note = msg.payload.process_note;\n\nconst ts = new Date(Date.now());\n\nconst variables = {\n      \"process\": {\n        \"name\": name,\n        \"note\": note,\n        \"hasBeginning\": ts,\n        \"hasEnd\": ts\n      }\n  };\n\n// To get this in the debug output\nmsg.variables = variables\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query: `mutation($process:ProcessCreateParams!) {\n\t  createProcess(process: $process) {\n\t\tprocess {\n\t\t  id\n\t\t}\n\t  }\n\t}\n`,\n  variables: variables\n})\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 220,
+        "x": 260,
         "y": 580,
         "wires": [
             [
@@ -356,8 +356,8 @@
         "name": "",
         "statusCode": "",
         "headers": {},
-        "x": 1150,
-        "y": 200,
+        "x": 1190,
+        "y": 60,
         "wires": []
     },
     {
@@ -371,8 +371,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 980,
-        "y": 200,
+        "x": 1020,
+        "y": 60,
         "wires": [
             [
                 "6196df0943914213"
@@ -388,8 +388,8 @@
         "method": "post",
         "upload": false,
         "swaggerDoc": "",
-        "x": 50,
-        "y": 280,
+        "x": 90,
+        "y": 140,
         "wires": [
             [
                 "cae81b35069f60a9"
@@ -403,8 +403,8 @@
         "name": "",
         "statusCode": "",
         "headers": {},
-        "x": 830,
-        "y": 280,
+        "x": 870,
+        "y": 140,
         "wires": []
     },
     {
@@ -418,8 +418,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 640,
-        "y": 280,
+        "x": 680,
+        "y": 140,
         "wires": [
             [
                 "85edf2b45871f9bd"
@@ -432,8 +432,8 @@
         "z": "a9cf961a3a52160c",
         "name": "Perform Login of agents",
         "info": "",
-        "x": 110,
-        "y": 160,
+        "x": 150,
+        "y": 20,
         "wires": []
     },
     {
@@ -445,8 +445,8 @@
         "method": "post",
         "upload": false,
         "swaggerDoc": "",
-        "x": 50,
-        "y": 360,
+        "x": 90,
+        "y": 220,
         "wires": [
             [
                 "6b9a303ec68aaf47"
@@ -464,8 +464,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 780,
-        "y": 360,
+        "x": 820,
+        "y": 220,
         "wires": [
             [
                 "71f92c67ca67af48"
@@ -479,8 +479,8 @@
         "name": "",
         "statusCode": "",
         "headers": {},
-        "x": 930,
-        "y": 360,
+        "x": 970,
+        "y": 220,
         "wires": []
     },
     {
@@ -490,7 +490,7 @@
         "name": "",
         "statusCode": "",
         "headers": {},
-        "x": 890,
+        "x": 930,
         "y": 440,
         "wires": []
     },
@@ -499,13 +499,13 @@
         "type": "function",
         "z": "a9cf961a3a52160c",
         "name": "Format Reply",
-        "func": "const eventId = msg.payload.data.createEconomicEvent.economicEvent.id;\nconst resourceIn = msg.payload.data.createEconomicEvent.economicEvent.resourceInventoriedAs;\nconst resourceOut = msg.payload.data.createEconomicEvent.economicEvent.toResourceInventoriedAs;\n\n\nmsg.payload = {};\nmsg.payload.eventId = eventId;\nmsg.payload.resourceIn = resourceIn;\nmsg.payload.resourceOut = resourceOut;\n\nreturn msg;",
+        "func": "const eventId = msg.payload.data.createEconomicEvent.economicEvent.id;\nconst resourceId = msg.payload.data.createEconomicEvent.economicResource.id;\n\n\nmsg.payload = {};\nmsg.payload.eventId = eventId;\nmsg.payload.resourceId = resourceId;\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 660,
+        "x": 700,
         "y": 440,
         "wires": [
             [
@@ -527,7 +527,7 @@
         "proxy": "",
         "authType": "",
         "senderr": false,
-        "x": 410,
+        "x": 450,
         "y": 440,
         "wires": [
             [
@@ -541,17 +541,18 @@
         "type": "function",
         "z": "a9cf961a3a52160c",
         "name": "Create Resource",
-        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.token;\n\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\nconst agent_id = msg.payload.agent_id;\nconst resource_id = msg.payload.resource_id;\nconst unit_id = msg.payload.unit_id;\nconst amount = msg.payload.amount;\nconst resource_name = msg.payload.resource_name;\n\nconst ts = new Date(Date.now());\n\nconst variables = {\n        \"event\": {\n            \"note\": \"update event\",\n            \"action\": \"raise\",\n            \"provider\": agent_id, \n            \"receiver\": agent_id,\n            \"hasPointInTime\" : ts,\n            \"resourceInventoriedAs\": resource_id,\n            \"resourceQuantity\": {\n              \"hasUnit\": unit_id, \n              \"hasNumericalValue\": amount \n            },\n            \"outputOf\" : msg.payload.processOut_id\n        },\n        \"newInventoriedResource\": { \n            \"name\": resource_name\n        }\n};\n\n\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query:    `mutation($event:EconomicEventCreateParams!, $newInventoriedResource:EconomicResourceCreateParams) {\n                createEconomicEvent(event:$event, newInventoriedResource:$newInventoriedResource) {\n                    economicEvent {\n                        id\n                        provider {\n                            id\n                            name\n                            note\n                        }\n                        resourceQuantity {\n                            hasNumericalValue\n                            hasUnit {\n                                label\n                                symbol\n                            }\n                        }\n                        toResourceInventoriedAs { \n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                        }\n                        resourceInventoriedAs {\n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                        }\n                    }\n                }\n            }`,\n    variables: variables\n})\n\n\nreturn msg;",
+        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.token;\n\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\nconst agent_id = msg.payload.agent_id;\nconst resource_id = msg.payload.resource_id;\nconst resource_name = msg.payload.resource_name;\nconst unit_id = msg.payload.unit_id;\nconst amount = msg.payload.amount;\nconst classification = msg.payload.classification;\n\nconst ts = new Date(Date.now());\n\nconst variables = {\n        \"event\": {\n            \"note\": \"update event\",\n            \"action\": \"raise\",\n            \"provider\": agent_id, \n            \"receiver\": agent_id,\n            \"hasPointInTime\" : ts,\n            \"resourceQuantity\": {\n              \"hasUnit\": unit_id, \n              \"hasNumericalValue\": amount \n            },\n            \"resourceConformsTo\": classification\n        },\n        \"newInventoriedResource\": { \n            \"name\": resource_name,\n            \"trackingIdentifier\": resource_id\n        }\n};\n\n// To get this in the debug output\nmsg.variables = variables\n\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query:    `mutation($event:EconomicEventCreateParams!, $newInventoriedResource:EconomicResourceCreateParams) {\n                createEconomicEvent(event:$event, newInventoriedResource:$newInventoriedResource) {\n                    economicEvent {\n                        id\n                        provider {\n                            id\n                            name\n                            note\n                        }\n                        resourceQuantity {\n                            hasNumericalValue\n                            hasUnit {\n                                label\n                                symbol\n                            }\n                        }\n                    }\n    \t\t\t\teconomicResource{\n                      id\n                      accountingQuantity {\n                        hasNumericalValue\n                      }\n                      onhandQuantity {\n                        hasNumericalValue\n                      }\n                      conformsTo {\n                        id\n                      }\n                      \n                    }\n                }\n            }`,\n    variables: variables\n})\n\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 230,
+        "x": 270,
         "y": 440,
         "wires": [
             [
-                "75ad1ae27b0775fb"
+                "75ad1ae27b0775fb",
+                "b582df30a9d2445c"
             ]
         ]
     },
@@ -564,12 +565,11 @@
         "method": "post",
         "upload": false,
         "swaggerDoc": "",
-        "x": 50,
+        "x": 90,
         "y": 440,
         "wires": [
             [
-                "62fcaf5db019d842",
-                "b582df30a9d2445c"
+                "62fcaf5db019d842"
             ]
         ]
     },
@@ -584,7 +584,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 660,
+        "x": 700,
         "y": 580,
         "wires": [
             [
@@ -606,7 +606,7 @@
         "proxy": "",
         "authType": "",
         "senderr": false,
-        "x": 410,
+        "x": 450,
         "y": 580,
         "wires": [
             [
@@ -622,7 +622,7 @@
         "name": "",
         "statusCode": "",
         "headers": {},
-        "x": 890,
+        "x": 930,
         "y": 580,
         "wires": []
     },
@@ -639,7 +639,7 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 570,
+        "x": 610,
         "y": 640,
         "wires": []
     },
@@ -652,7 +652,7 @@
         "method": "post",
         "upload": false,
         "swaggerDoc": "",
-        "x": 50,
+        "x": 90,
         "y": 580,
         "wires": [
             [
@@ -667,7 +667,7 @@
         "name": "",
         "statusCode": "",
         "headers": {},
-        "x": 890,
+        "x": 930,
         "y": 720,
         "wires": []
     },
@@ -676,13 +676,13 @@
         "type": "function",
         "z": "a9cf961a3a52160c",
         "name": "Format Reply",
-        "func": "const transferID = msg.payload.data.createEconomicEvent.economicEvent.id;\n\n\nmsg.payload = {};\nmsg.payload.transferID = transferID;\n\nreturn msg;",
+        "func": "const eventID = msg.payload.data.createEconomicEvent.economicEvent.id;\n\nconst transferredID = msg.payload.data.createEconomicEvent.economicEvent.toResourceInventoriedAs.id;\n\n\nmsg.payload = {};\nmsg.payload.eventId = eventID;\nmsg.payload.transferredID = transferredID;\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 660,
+        "x": 700,
         "y": 720,
         "wires": [
             [
@@ -704,7 +704,7 @@
         "proxy": "",
         "authType": "",
         "senderr": false,
-        "x": 410,
+        "x": 450,
         "y": 720,
         "wires": [
             [
@@ -726,7 +726,7 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 570,
+        "x": 610,
         "y": 780,
         "wires": []
     },
@@ -739,7 +739,7 @@
         "method": "post",
         "upload": false,
         "swaggerDoc": "",
-        "x": 50,
+        "x": 90,
         "y": 720,
         "wires": [
             [
@@ -752,13 +752,13 @@
         "type": "function",
         "z": "a9cf961a3a52160c",
         "name": "Transfer Custody",
-        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.token;\n\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\nconst note = msg.payload.note;\nconst provider_id = msg.payload.provider_id;\nconst receiver_id = msg.payload.receiver_id;\nconst resource_id = msg.payload.resource_id;\nconst unit_id = msg.payload.unit_id;\nconst amount = msg.payload.amount;\nconst location_id = msg.payload.location_id;\n\nconst ts = new Date(Date.now());\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query:    `mutation($event:EconomicEventCreateParams!) {\n                createEconomicEvent(event:$event) {\n                    economicEvent {\n                        id\n                        provider {\n                            id\n                            name\n                            note\n                        }\n                        resourceQuantity {\n                            hasNumericalValue\n                            hasUnit {\n                                label\n                                symbol\n                            }\n                        }\n                        toResourceInventoriedAs { \n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            primaryAccountable {\n                            id\n                          }\n                        }\n                        resourceInventoriedAs {\n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            primaryAccountable {\n                            id\n                          }\n                        }\n                    }\n                }\n            }`,\n    variables: {\n        \"event\": {\n            \"note\": note,\n            \"action\": \"transfer-custody\",\n            \"provider\": provider_id, \n            \"receiver\": receiver_id, \n            \"resourceInventoriedAs\": resource_id,\n            \"hasPointInTime\": ts,\n            \"atLocation\": location_id,\n            \"resourceQuantity\": {\n              \"hasUnit\": unit_id, \n              \"hasNumericalValue\": amount \n            }\n        }\n    }\n})\n\n\nreturn msg;",
+        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.token;\n\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\nconst note = msg.payload.note;\nconst provider_id = msg.payload.provider_id;\nconst receiver_id = msg.payload.receiver_id;\nconst resource_id = msg.payload.resource_id;\nconst unit_id = msg.payload.unit_id;\nconst amount = msg.payload.amount;\nconst location_id = msg.payload.location_id;\n\nconst ts = new Date(Date.now());\nconst variables = {\n        \"event\": {\n            \"note\": note,\n            \"action\": \"transfer-custody\",\n            \"provider\": provider_id, \n            \"receiver\": receiver_id, \n            \"resourceInventoriedAs\": resource_id,\n            \"hasPointInTime\": ts,\n            \"atLocation\": location_id,\n            \"resourceQuantity\": {\n              \"hasUnit\": unit_id, \n              \"hasNumericalValue\": amount \n            }\n        }\n    };\n    \n// To get this in the debug output\nmsg.variables = variables;\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query:    `mutation($event:EconomicEventCreateParams!) {\n                createEconomicEvent(event:$event) {\n                    economicEvent {\n                        id\n                        provider {\n                            id\n                            name\n                            note\n                        }\n                        resourceQuantity {\n                            hasNumericalValue\n                            hasUnit {\n                                label\n                                symbol\n                            }\n                        }\n                        toResourceInventoriedAs { \n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            primaryAccountable {\n                            id\n                          }\n                        }\n                        resourceInventoriedAs {\n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            primaryAccountable {\n                            id\n                          }\n                        }\n                    }\n                }\n            }`,\n    variables: variables\n})\n\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 210,
+        "x": 250,
         "y": 720,
         "wires": [
             [
@@ -774,7 +774,7 @@
         "name": "",
         "statusCode": "",
         "headers": {},
-        "x": 890,
+        "x": 930,
         "y": 840,
         "wires": []
     },
@@ -783,13 +783,13 @@
         "type": "function",
         "z": "a9cf961a3a52160c",
         "name": "Format Reply",
-        "func": "const eventId = msg.payload.data.createEconomicEvent.economicEvent.id;\n\nvar resourceId = null;\n\nif ( msg.payload.data.createEconomicEvent.economicEvent.resourceInventoriedAs != null){\n    resourceId = msg.payload.data.createEconomicEvent.economicEvent.resourceInventoriedAs.id;\n}\nmsg.payload = {};\nmsg.payload.eventId = eventId;\n\nif (resourceId != null){\n    msg.payload.resourceId = resourceId;\n}\n\nreturn msg;",
+        "func": "const eventId = msg.payload.data.createEconomicEvent.economicEvent.id;\n\nvar resourceId = null;\n\nif ( msg.payload.data.createEconomicEvent.economicResource != null ){\n    resourceId = msg.payload.data.createEconomicEvent.economicResource.id;\n}else if ( msg.payload.data.createEconomicEvent.economicEvent.resourceInventoriedAs != null ){\n    resourceId = msg.payload.data.createEconomicEvent.economicEvent.resourceInventoriedAs.id;\n}else if (msg.payload.data.createEconomicEvent.economicEvent.toResourceInventoriedAs != null ){\n    resourceId = msg.payload.data.createEconomicEvent.economicEvent.toResourceInventoriedAs;\n}\n\nmsg.payload = {};\nmsg.payload.eventId = eventId;\n\nif (resourceId != null){\n    msg.payload.resourceId = resourceId;\n}\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 660,
+        "x": 700,
         "y": 840,
         "wires": [
             [
@@ -811,7 +811,7 @@
         "proxy": "",
         "authType": "",
         "senderr": false,
-        "x": 410,
+        "x": 450,
         "y": 840,
         "wires": [
             [
@@ -825,17 +825,18 @@
         "type": "function",
         "z": "a9cf961a3a52160c",
         "name": "Create Event",
-        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.token;\n\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\nvar variables = {\n        \"event\": {\n            \"note\": msg.payload.note,\n            \"action\": msg.payload.action\n        }\n};\n\nvariables.event.hasPointInTime = new Date(Date.now());\n\nif ( msg.payload.provider_id != undefined ){\n    variables.event.provider = msg.payload.provider_id;\n}\n\nif ( msg.payload.receiver_id != undefined ){\n    variables.event.receiver = msg.payload.receiver_id;\n}\n\nif ( msg.payload.processIn_id != undefined ){\n    variables.event.inputOf = msg.payload.processIn_id;\n}\n\nif ( msg.payload.processOut_id != undefined ){\n    variables.event.outputOf = msg.payload.processOut_id;\n}\n\nif ( msg.payload.unit_id != undefined && msg.payload.amount != undefined){\n    variables.event.resourceQuantity = {};\n    variables.event.resourceQuantity.hasUnit = msg.payload.unit_id;\n    variables.event.resourceQuantity.hasNumericalValue = msg.payload.amount;\n}\n\nif ( msg.payload.resource_id != undefined ){\n    variables.event.resourceInventoriedAs = msg.payload.resource_id;\n}\n\nif ( msg.payload.resource_name != undefined ){\n    variables.newInventoriedResource = {};\n    variables.newInventoriedResource.name = msg.payload.resource_name;\n}\n\nif ( msg.payload.resourcetrack_id != undefined ){\n    // we imply here that there is also a resource_name, otherwise bomb\n    variables.newInventoriedResource.trackingIdentifier = msg.payload.resourcetrack_id;\n}\n\n\n\n// To get this in the debug output\nmsg.variables = variables\n\nconst response = `economicEvent {\n                        id\n                        provider {\n                            id\n                            name\n                            note\n                        }\n                        resourceQuantity {\n                            hasNumericalValue\n                            hasUnit {\n                                label\n                                symbol\n                            }\n                        }\n                        toResourceInventoriedAs { \n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            primaryAccountable {\n                            id\n                          }\n                        }\n                        resourceInventoriedAs {\n                            id\n                            name\n                            onhandQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            accountingQuantity {\n                                hasNumericalValue\n                                hasUnit {\n                                    label\n                                    symbol\n                                }\n                            }\n                            primaryAccountable {\n                            id\n                          }\n                        }\n                    }`;\n                    \nvar mutation = '';\n\nif (variables.newInventoriedResource == undefined){\n    mutation = `mutation($event:EconomicEventCreateParams!, $newInventoriedResource: EconomicResourceCreateParams) {\n                createEconomicEvent(event:$event, newInventoriedResource:$newInventoriedResource) {` +\n                    response +\n                `}\n            }`;\n}else{\n    mutation = `mutation($event:EconomicEventCreateParams!) {\n                createEconomicEvent(event:$event) {` +\n                    response +\n                `}\n            }`;\n}\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n    query:    mutation,\n    variables: variables\n})\n\n\nreturn msg;",
+        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.token;\n\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\nvar variables = {\n        \"event\": {\n            \"note\": msg.payload.note,\n            \"action\": msg.payload.action\n        }\n};\n\nvariables.event.hasPointInTime = new Date(Date.now());\n\nif ( msg.payload.provider_id != undefined ){\n    variables.event.provider = msg.payload.provider_id;\n}\n\nif ( msg.payload.receiver_id != undefined ){\n    variables.event.receiver = msg.payload.receiver_id;\n}\n\nif ( msg.payload.processIn_id != undefined ){\n    variables.event.inputOf = msg.payload.processIn_id;\n}\n\nif ( msg.payload.processOut_id != undefined ){\n    variables.event.outputOf = msg.payload.processOut_id;\n}\n\nif ( msg.payload.unit_id != undefined && msg.payload.amount != undefined){\n    variables.event.resourceQuantity = {};\n    variables.event.resourceQuantity.hasUnit = msg.payload.unit_id;\n    variables.event.resourceQuantity.hasNumericalValue = msg.payload.amount;\n}\n\nif ( msg.payload.resource_id != undefined ){\n    variables.event.resourceInventoriedAs = msg.payload.resource_id;\n}\n\nif ( msg.payload.classification != undefined ){\n    variables.event.resourceConformsTo = msg.payload.classification;\n}\n\nif ( msg.payload.resource_name != undefined ){\n    variables.newInventoriedResource = {};\n    variables.newInventoriedResource.name = msg.payload.resource_name;\n}\n\nif ( msg.payload.resourcetrack_id != undefined ){\n    // we imply here that there is also a resource_name, otherwise bomb\n    variables.newInventoriedResource.trackingIdentifier = msg.payload.resourcetrack_id;\n}\n\n\n\n// To get this in the debug output\nmsg.variables = variables\n\nconst resource_quantity = `\n                            hasNumericalValue\n                            hasUnit {\n                                label\n                                symbol\n                            }\n\n`;\n\nconst resource_body = `\n                            id\n                            name\n                            onhandQuantity {` +\n                                resource_quantity +\n                            `}\n                            accountingQuantity {` +\n                                resource_quantity +\n                            `}\n                            primaryAccountable {\n                            id\n                          }\n`;\n\nconst response = `economicEvent {\n                        id\n                        provider {\n                            id\n                            name\n                            note\n                        }\n                        resourceQuantity {\n                            hasNumericalValue\n                            hasUnit {\n                                label\n                                symbol\n                            }\n                        }\n                        toResourceInventoriedAs {` +\n                            resource_body +\n                        `}\n                        resourceInventoriedAs {` +\n                            resource_body +\n                        `\n                        }\n                    },\n                    economicResource {` +\n                        resource_body +\n                    `}\n                    `;\n                    \nvar mutation = '';\n\nif (variables.newInventoriedResource != undefined){\n    mutation = `mutation($event:EconomicEventCreateParams!, $newInventoriedResource: EconomicResourceCreateParams) {\n                createEconomicEvent(event:$event, newInventoriedResource:$newInventoriedResource) {` +\n                    response +\n                `}\n            }`;\n}else{\n    mutation = `mutation($event:EconomicEventCreateParams!) {\n                createEconomicEvent(event:$event) {` +\n                    response +\n                `}\n            }`;\n}\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n    query:    mutation,\n    variables: variables\n})\n\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 190,
+        "x": 230,
         "y": 840,
         "wires": [
             [
-                "9395b1d5f101d921"
+                "9395b1d5f101d921",
+                "2fdd738ccee21e9c"
             ]
         ]
     },
@@ -852,7 +853,7 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 570,
+        "x": 610,
         "y": 900,
         "wires": []
     },
@@ -865,11 +866,12 @@
         "method": "post",
         "upload": false,
         "swaggerDoc": "",
-        "x": 50,
+        "x": 90,
         "y": 840,
         "wires": [
             [
-                "1239e8ccc0e65584"
+                "1239e8ccc0e65584",
+                "2fdd738ccee21e9c"
             ]
         ]
     },
@@ -880,8 +882,8 @@
         "name": "",
         "statusCode": "",
         "headers": {},
-        "x": 890,
-        "y": 1000,
+        "x": 930,
+        "y": 960,
         "wires": []
     },
     {
@@ -895,8 +897,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 660,
-        "y": 1000,
+        "x": 700,
+        "y": 960,
         "wires": [
             [
                 "17b272e3686339f5"
@@ -917,8 +919,8 @@
         "proxy": "",
         "authType": "",
         "senderr": false,
-        "x": 410,
-        "y": 1000,
+        "x": 450,
+        "y": 960,
         "wires": [
             [
                 "04a7b53f4308dcdd",
@@ -937,8 +939,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 200,
-        "y": 1000,
+        "x": 240,
+        "y": 960,
         "wires": [
             [
                 "9b5733fa43a0796d"
@@ -950,7 +952,7 @@
         "type": "debug",
         "z": "a9cf961a3a52160c",
         "name": "",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -958,8 +960,8 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 570,
-        "y": 1060,
+        "x": 610,
+        "y": 1020,
         "wires": []
     },
     {
@@ -971,8 +973,8 @@
         "method": "post",
         "upload": false,
         "swaggerDoc": "",
-        "x": 50,
-        "y": 1000,
+        "x": 90,
+        "y": 960,
         "wires": [
             [
                 "2db04210e5b35643"
@@ -985,8 +987,8 @@
         "z": "a9cf961a3a52160c",
         "name": "Create locations for agents",
         "info": "",
-        "x": 110,
-        "y": 240,
+        "x": 150,
+        "y": 100,
         "wires": []
     },
     {
@@ -995,8 +997,8 @@
         "z": "a9cf961a3a52160c",
         "name": "Create units of measurements for resources",
         "info": "",
-        "x": 170,
-        "y": 320,
+        "x": 210,
+        "y": 180,
         "wires": []
     },
     {
@@ -1005,7 +1007,7 @@
         "z": "a9cf961a3a52160c",
         "name": "Create resources",
         "info": "",
-        "x": 80,
+        "x": 120,
         "y": 400,
         "wires": []
     },
@@ -1015,7 +1017,7 @@
         "z": "a9cf961a3a52160c",
         "name": "Create process to encapsulate events",
         "info": "",
-        "x": 150,
+        "x": 190,
         "y": 540,
         "wires": []
     },
@@ -1025,7 +1027,7 @@
         "z": "a9cf961a3a52160c",
         "name": "Create event Transfer-custody",
         "info": "",
-        "x": 120,
+        "x": 160,
         "y": 680,
         "wires": []
     },
@@ -1035,8 +1037,125 @@
         "z": "a9cf961a3a52160c",
         "name": "Create events with other actions",
         "info": "",
-        "x": 130,
+        "x": 170,
         "y": 800,
+        "wires": []
+    },
+    {
+        "id": "21e3ef708e289378",
+        "type": "debug",
+        "z": "a9cf961a3a52160c",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 610,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "383d01758c0eab1c",
+        "type": "http request",
+        "z": "a9cf961a3a52160c",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 450,
+        "y": 320,
+        "wires": [
+            [
+                "21e3ef708e289378",
+                "dea2dc586e075728"
+            ]
+        ]
+    },
+    {
+        "id": "a9dec105802ab695",
+        "type": "function",
+        "z": "a9cf961a3a52160c",
+        "name": "Create Spec",
+        "func": "// Reset the headears\nmsg.headers = {};\nmsg.headers['content-type'] = 'application/json';\nmsg.headers['authorization'] = \"Bearer \" + msg.payload.token;\n\n\nmsg.url = msg.payload.endpoint;\nmsg.method = 'POST';\n\nconst unit_id = msg.payload.unit_id;\nconst name = msg.payload.name;\nconst note = msg.payload.note;\nconst classification = msg.payload.classification;\n\nconst ts = new Date(Date.now());\n\nconst variables = {\n        \"resourceSpecification\": {\n            \"defaultUnitOfResource\": unit_id,\n            \"name\": name,\n            \"note\": note,\n            \"resourceClassifiedAs\": classification\n\t    }\n    };\n\n// To get this in the debug output\nmsg.variables = variables\n\n\n// This is going to destroy the msg.payload!!!\nmsg.payload = JSON.stringify({\n  query:    `mutation ($resourceSpecification:ResourceSpecificationCreateParams!){\n  \t            createResourceSpecification(resourceSpecification:$resourceSpecification){\n                    resourceSpecification{\n                        id,\n                        name\n                    }\n                }\n            }`,\n    variables: variables\n})\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 250,
+        "y": 320,
+        "wires": [
+            [
+                "383d01758c0eab1c",
+                "21e3ef708e289378"
+            ]
+        ]
+    },
+    {
+        "id": "dea2dc586e075728",
+        "type": "function",
+        "z": "a9cf961a3a52160c",
+        "name": "Format Reply",
+        "func": "const specId = msg.payload.data.createResourceSpecification.resourceSpecification.id;\n\n\nmsg.payload = {};\nmsg.payload.specId = specId;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 700,
+        "y": 320,
+        "wires": [
+            [
+                "1e377a5f89c87589"
+            ]
+        ]
+    },
+    {
+        "id": "525b857facb27517",
+        "type": "http in",
+        "z": "a9cf961a3a52160c",
+        "name": "Form",
+        "url": "/isolationgowns/resourcespec",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 90,
+        "y": 320,
+        "wires": [
+            [
+                "a9dec105802ab695"
+            ]
+        ]
+    },
+    {
+        "id": "1e377a5f89c87589",
+        "type": "http response",
+        "z": "a9cf961a3a52160c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 930,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "b1049f596fbf4e40",
+        "type": "comment",
+        "z": "a9cf961a3a52160c",
+        "name": "Create resources specification",
+        "info": "",
+        "x": 160,
+        "y": 280,
         "wires": []
     }
 ]
