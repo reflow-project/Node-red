@@ -11,10 +11,10 @@ case "${1}" in
         "demo")
             my_endpoint='https://reflow-demo.dyne.org/api/explore'
         ;;
-        "shared")
-            my_endpoint='http://135.181.35.156:4000/api/explore'
-        ;;
         "test")
+            my_endpoint='http://reflow-test.dyne.org/api/explore'
+        ;;
+        "latest")
             my_endpoint='https://reflow-void.zenr.io/api/explore'
         ;;
         *)
