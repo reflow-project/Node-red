@@ -25,9 +25,9 @@ Start Docker, when it is up run the scritp `startNodeRed.sh`
 Connect to http://127.0.0.1:1880/ to see your Node-red instance.
 
 To run the script, you need to know which Bonfire instance to target; currently the script is aware of:
-- demo : 'https://reflow-demo.dyne.org/api/explore'
-- shared : 'http://135.181.35.156:4000/api/explore'
-- test : 'https://reflow-void.zenr.io/api/explore'
+- latest : 'https://reflow-void.zenr.io/api/explore'
+
+This version of the script runs only with the latest version of Bonfire, to run on the stable check out the stable-bonfire branch.
 
 If you are running your own instance, edit the script `doFlow.sh` in the case swith under `# read the endpoint`
 
