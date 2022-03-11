@@ -476,7 +476,7 @@ echo "$(date) - Created event: ${event_note}, event id: ${event_id}, action modi
 
 echo "$(date) - Doing trace and track gown: ${gown_id}"
 result=$(traceTrack ${gown_id} 10)
-echo ${result} | jq -r '.result.'
+echo ${result} | jq -r '.result'
 if [ "${do_debug} " == "true " ]
 then
     echo "DEBUG: $(date) -  result is: ${result}"
