@@ -11,8 +11,8 @@ case "${1}" in
         "demo")
             my_endpoint='https://reflow-demo.dyne.org/api/explore'
         ;;
-        "shared")
-            my_endpoint='http://135.181.35.156:4000/api/explore'
+        "test")
+            my_endpoint='http://reflow-test.dyne.org/api/explore'
         ;;
         *)
             echo "Please specify a valid back-end"
@@ -53,45 +53,45 @@ loccleaner_note='Textile service provider'
 
 function doLogin {
     body="{\"username\" : \"${1}\", \"password\" : \"${2}\", \"endpoint\" : \"${my_endpoint}\" }"
-    # echo "${body}"
     result=$(curl -X POST -H "Content-Type: application/json" -d "${body}" ${my_nodered}/login 2>/dev/null)
-    echo ${result}
+    json_result="{\"result\": $result, \"body\": $body}"
+    echo ${json_result}
 }
 
 function createLocation {
     body="{\"token\" : ${1}, \"name\" : \"${2}\", \"lat\" : ${3}, \"long\" : ${4}, \"addr\" : \"${5}\", \"note\" : \"${6}\", \"endpoint\" : \"${my_endpoint}\" }"
-    # echo "${body}"
     result=$(curl -X POST -H "Content-Type: application/json" -d "${body}" ${my_nodered}/location 2>/dev/null)
-    echo ${result}
+    json_result="{\"result\": $result, \"body\": $body}"
+    echo ${json_result}
 }
 
 function createUnit {
     body="{\"token\" : ${1}, \"label\" : \"${2}\", \"symbol\" : \"${3}\", \"endpoint\" : \"${my_endpoint}\" }"
-    # echo "${body}"
     result=$(curl -X POST -H "Content-Type: application/json" -d "${body}" ${my_nodered}/unit 2>/dev/null)
-    echo ${result}
+    json_result="{\"result\": $result, \"body\": $body}"
+    echo ${json_result}
 }
 
 function createProcess {
     body="{\"token\" : ${1}, \"process_name\" : \"${2}\", \"process_note\" : \"${3}\", \"endpoint\" : \"${my_endpoint}\" }"
-    # echo "${body}"
     result=$(curl -X POST -H "Content-Type: application/json" -d "${body}" ${my_nodered}/process 2>/dev/null)
-    echo ${result}
+    json_result="{\"result\": $result, \"body\": $body}"
+    echo ${json_result}
 }
 
 function transferCustody {
 
     body="{\"token\" : ${1}, \"provider_id\" : ${2}, \"receiver_id\" : ${3}, \"resource_id\" : ${4}, \"unit_id\" : ${5}, \"amount\" : ${6}, \"location_id\" : ${7}, \"note\": \"${8}\", \"endpoint\" : \"${my_endpoint}\" }"
-    # echo "${body}"
     result=$(curl -X POST -H "Content-Type: application/json" -d "${body}" ${my_nodered}/transfer 2>/dev/null)
-    echo ${result}
+    json_result="{\"result\": $result, \"body\": $body}"
+    echo ${json_result}
 }
 
 function createResource {
     body="{\"token\" : ${1}, \"agent_id\" : ${2}, \"resource_name\" : \"${3}\", \"resource_id\" : \"${4}\", \"unit_id\" : ${5}, \"amount\" : ${6}, \"processOut_id\" : ${7}, \"endpoint\" : \"${my_endpoint}\" }"
-    # echo "${body}"
     result=$(curl -X POST -H "Content-Type: application/json" -d "${body}" ${my_nodered}/resource 2>/dev/null)
-    echo ${result}
+    json_result="{\"result\": $result, \"body\": $body}"
+    echo ${json_result}
 }
 
 function createEvent {
@@ -121,17 +121,17 @@ function createEvent {
         ;;
 	esac
 
-    # echo "${body}"
     result=$(curl -X POST -H "Content-Type: application/json" -d "${body}" ${my_nodered}/event 2>/dev/null)
-    echo ${result}
+    json_result="{\"result\": $result, \"body\": $body}"
+    echo ${json_result}
 }
 
 function traceTrack {
 
     body="{\"resource_id\" : ${1}, \"recursion\" : ${2}, \"endpoint\" : \"${my_endpoint}\" }"
-    # echo "${body}"
     result=$(curl -X POST -H "Content-Type: application/json" -d "${body}" ${my_nodered}/tracetrack 2>/dev/null)
-    echo ${result}
+    json_result="{\"result\": $result, \"body\": $body}"
+    echo ${json_result}
 }
 
 ################################################################################
