@@ -1,0 +1,17 @@
+{
+    "userChallenges": {
+        "whereParentsMet":"Manicomio",
+        "nameFirstPet":"Godzilla",
+        "nameFirstTeacher":"JimiHendrix",
+        "whereHomeTown":"Giuddili",
+        "nameMotherMaid":"Promiscua"
+    },
+    "name": "OLVG",
+    "username": "hospital_username",
+    "email": "hospital_username@example.org",
+    "lat" : 52.35871773455108,
+    "long" : 4.916762398221842,
+    "addr" : "Oosterpark 9, 1091 AC Amsterdam",
+    "note" : "olvg.nl",
+    "seedServerSideShard.HMAC": "__HMAC__"
+}

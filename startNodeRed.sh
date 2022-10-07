@@ -1,4 +1,4 @@
-cont_name=mynodered
+cont_name=nodered_interfacer
 
 docker rm -f ${cont_name}
 

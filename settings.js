@@ -410,6 +410,7 @@ module.exports = {
      */
     functionGlobalContext: {
         // os:require('os'),
+        zenroom:require('zenroom')
     },
 
     /** The maximum number of messages nodes will buffer internally as part of their

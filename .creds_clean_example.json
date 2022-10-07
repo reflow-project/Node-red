@@ -1,0 +1,17 @@
+{
+    "userChallenges": {
+        "whereParentsMet":"OntheMoon",
+        "nameFirstPet":"Lucifer",
+        "nameFirstTeacher":"Satan",
+        "whereHomeTown":"Hell",
+        "nameMotherMaid":"Theresa"
+    },
+    "name": "CleanLease Eindhoven",
+    "username": "hospital_username@example.org",
+    "email": "cleaner_username@example.org",
+    "lat" : 51.47240440868687,
+    "long" : 5.412460440524406,
+    "addr" : "De schakel 30, 5651 Eindhoven",
+    "note" : "Textile service provider",
+    "seedServerSideShard.HMAC": "__HMAC__"
+}
