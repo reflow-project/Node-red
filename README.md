@@ -1,17 +1,16 @@
-reflow-nodered
+Node-RED for Interfacer
 ==============
 
 ### About
 
-This repository contains a simple REST API interface implemented in Node-red (running locally in Docker) to the GraphQL interface offered by Bonfire, 
-and a bash script that makes use of this interface to enter data relative to the following flow:
+This repository contains a simple REST API interface implemented in Node-red (running locally in Docker) to the GraphQL interface offered by the Interfacer back-enc, and a bash script that makes use of this interface to enter data relative to the following flow:
 
 An isolation gown is created by a company that also takes care of the cleaning --> it is transported to the hospital
 --> it is used to perform surgery and therefore becomes dirty --> it is transported back to the owner company --> it is washed there.
 
 The cycle potentially repeats endlessy (or for a number of times), in the script is only executed once.
 
-The goal of the script is to generate a Material Passport for the Isolation Gown resource, and that is what the script outputs at the end, and it is logged in the file `MP-<name of Bonfire machine>.log`.
+The goal of the script is to generate a Material Passport for the Isolation Gown resource, and that is what the script outputs at the end, and it is logged in the file `MP-<name of Interfacer machine>.log`.
 
 ### Installation
 
@@ -24,27 +23,24 @@ Clone the repository, install the packages with `npm install` and you should be 
 Start Docker, when it is up run the scritp `startNodeRed.sh`
 Connect to http://127.0.0.1:1880/ to see your Node-red instance.
 
-To run the script, you need to know which Bonfire instance to target; currently the script is aware of:
-- latest : 'https://reflow-void.zenr.io/api/explore'
+To run the script, you need to know which Interface instance to target; currently the script is aware of:
+- testing : 'http://65.109.11.42:9000/api'
 
-This version of the script runs only with the latest version of Bonfire, to run on the stable check out the stable-bonfire branch.
+If you are running your own instance, edit the script `doFlow.sh` in the case switch under `# read the endpoint`
 
-If you are running your own instance, edit the script `doFlow.sh` in the case swith under `# read the endpoint`
-
-For the chosen instance you need to have the credentials of two users, and set them in `.credentials.sh` 
-(an example of the fields and format of the file is in `.credentials.example.sh`)
+For the chosen instance you need to have create the credentials (keypair) of two users, have a look at the files `.creds_hosp_example.json` and `.creds_clean_example.json`
 
 Then you can run the script as following:
 
 `./doFlow.sh <name of instance you set in script> N N` where the first N is for Not perform init and the second is for do Not print debug information.
 
 Initialisation is required when you need to create units of measures and locations of agents, and once done these data is stored on file 
-(named as `init_<instance's name>.json`, for ex. `init_reflow-demo.dyne.org.json`) so not to have to create it again.
+(named as `init_<instance's name>.json`, for ex. `init_<IP address>.json`) so not to have to create it again.
 
 ### Screenshots
 (Please note: the screenshots are not regularly updated, they are used to give an idea of the system).
 
-The following screenshot shows the tab in Node-red where the HTTP endpoints are defined that encapsulate the GraphQL calls to Bonfire. These endpoints are called by the script `doFlow.sh` to enter the simple flow described above in Bonfire.
+The following screenshot shows the tab in Node-red where the HTTP endpoints are defined that encapsulate the GraphQL calls to the Interface back-end. These endpoints are called by the script `doFlow.sh` to enter the simple flow described above in the back-end.
 
 ![Node-red tab with endpoints](/screenshots/endpoints.png?raw=true "Node-red tab with endpoints")
 
@@ -52,4 +48,4 @@ The following screenshot shows a fragment of the code used to process the form d
 
 ![Event endpoint processing code](/screenshots/codenode.png?raw=true "Event endpoint processing code")
 
-As mentioned above, the output generate by running the script is in `MP-<name of Bonfire machine>.log`.
+As mentioned above, the output generate by running the script is in `MP-<name of Interfacer machine>.log`.
