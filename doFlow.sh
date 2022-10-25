@@ -527,7 +527,7 @@ echo "$(date) - Created event: ${event_note}, event id: ${event_id}, action prod
 # echo "$(date) - Created 1 gown with tracking id: ${gown_trackid}, id: ${gown_id} owned by the cleaner, event id: ${event_id}"
 
 ################################################################################
-##### First we transfer the gown from the owner to the hospital
+##### Then we transfer the gown from the owner to the hospital
 ##### The cleaner is still the primary accountable
 ################################################################################
 transfer_note='Transfer gowns to hospital'
